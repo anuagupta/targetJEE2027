@@ -137,6 +137,17 @@ input[type=range]{width:100%;accent-color:var(--lav);min-height:32px}
 .rpbar .btn.alt{background:transparent;color:var(--ink);border:1px solid var(--edge-2)}
 .rpmsg{flex:1 1 100%;margin:0;color:var(--mint);font-size:14px}
 .dr.past{opacity:.55}
+.cal .btn.alt{background:transparent;color:var(--ink);border:1px solid var(--edge-2);padding:8px 16px;min-height:38px;font-size:13px}
+.calwrap{overflow-x:auto;padding-bottom:4px}
+.calm{margin-top:14px;min-width:560px}.calm h3{font:600 15px var(--f-display);margin:0 0 8px}
+.calg{display:grid;grid-template-columns:repeat(7,minmax(76px,1fr));gap:6px}
+.calh{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:center}
+.cell{border:1px solid var(--edge);background:var(--glass);border-radius:12px;padding:6px;display:grid;gap:4px}
+.cell.sun{background:var(--glass-2)}.cell.ov{border-color:var(--lav);box-shadow:0 0 0 1px var(--lav) inset}
+.cell .dn{font:500 12px var(--f-mono);color:var(--muted)}
+.cell input{width:100%;min-height:32px;padding:4px 6px;font-size:14px;text-align:center}
+.cell input.cn{font-size:11px;min-height:26px;text-align:left}
+.tag{display:inline-block;margin-top:2px;padding:1px 8px;border-radius:999px;background:rgba(255,211,122,.16);color:var(--warn);font:500 11px var(--f-body)}
 .dlbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:center;margin-top:6px;padding:18px;border:1px solid var(--edge);border-radius:22px;background:var(--glass)}
 .dlbar p{flex:1 1 100%;text-align:center;margin:0;color:var(--muted);font-size:13px}
 .dlbar .btn.alt{background:transparent;color:var(--ink);border:1px solid var(--edge-2)}
@@ -954,8 +965,10 @@ var Simple = (function () {
   function build(inp) {
     var D = PLANNER_DATA, W = Planner.weightage(D);
     var days = Math.round(inp.days), H = inp.hours;
+    var dh = []; for (var q = 0; q < days; q++) dh.push(inp.dayHours && inp.dayHours[q] != null && !isNaN(+inp.dayHours[q]) ? Math.max(0, +inp.dayHours[q]) : H);
+    var sumH = function (a) { return a.reduce(function (s, x) { return s + x; }, 0); };
     var buf = Math.min(Math.max(0, Math.round(inp.buffer == null ? 3 : inp.buffer)), days - 1), workDays = days - buf;
-    var totalH = days * H, studyH = totalH * STUDY_SHARE, chapterH = workDays * H * STUDY_SHARE, budget = chapterH * 0.97, cap = Math.floor(budget / U + 1e-9);
+    var totalH = sumH(dh), studyH = totalH * STUDY_SHARE, chapterH = sumH(dh.slice(0, workDays)) * STUDY_SHARE, budget = chapterH * 0.97, cap = Math.floor(budget / U + 1e-9);
     var shares = D.chapters.filter(function (c) { return !c.noData; }).map(function (c) { return W[c.id].share; });
     var avgShare = shares.reduce(function (a, b) { return a + b; }, 0) / shares.length;
     var exl = {}; (inp.exclude || []).forEach(function (id) { exl[id] = 1; });
@@ -1026,17 +1039,17 @@ var Simple = (function () {
 
     // "Fit everything" with ample time: stretch every chapter so that at most the last 3 days are left for tests and buffer
     if (sumFull <= budget + 1e-9) {   // ample time: always fit everything, whichever plan type was chosen
-      var dayCap0 = H * STUDY_SHARE;
+      var capOf = function (d) { return d <= days ? dh[d - 1] * STUDY_SHARE : 0; };
       var endDay = function (hs) {
-        var d = 1, cap = dayCap0, i = 0, rem2 = hs.slice();
+        var d = 1, cap = capOf(1), i = 0, rem2 = hs.slice();
         while (i < hs.length && d <= days + 1) {
-          if (cap < 0.25) { d++; cap = dayCap0; continue; }
+          if (cap < 0.25) { d++; cap = capOf(d); continue; }
           var tk = Math.min(cap, rem2[i]); if (rem2[i] - tk < 0.25) tk = rem2[i];
           rem2[i] -= tk; cap -= tk; if (rem2[i] <= 1e-9) i++;
         }
-        return cap === dayCap0 && d > 1 ? d - 1 : d;
+        return cap === capOf(d) && d > 1 ? d - 1 : d;
       };
-      var lo3 = 1, hi3 = 2 + days * H;
+      var lo3 = 1, hi3 = 2 + totalH;
       for (var k3 = 0; k3 < 60; k3++) {
         var m3 = (lo3 + hi3) / 2;
         if (endDay(order.map(function (it) { return up(it.full * m3); })) <= workDays) lo3 = m3; else hi3 = m3;
@@ -1045,10 +1058,10 @@ var Simple = (function () {
     }
 
     // calendar: each day = 80% chapter study + 20% recall / tests. Chapters run back to back.
-    var dayH = H * STUDY_SHARE, recH = H - dayH, start = parseDate(inp.start);
+    var dayH, recH, start = parseDate(inp.start);
     var rem = order.map(function (it) { return it.h; }), ci = 0, dayList = [], doneSoFar = [];
     for (var dn = 1; dn <= days; dn++) {
-      var cap2 = dayH, sl = [], finished = [];
+      dayH = dh[dn - 1] * STUDY_SHARE; recH = dh[dn - 1] - dayH; var cap2 = dayH, sl = [], finished = [];
       while (cap2 >= 0.25 && ci < order.length) {
         var take = Math.min(cap2, rem[ci]), it2 = order[ci];
         if (rem[ci] - take < 0.25) take = rem[ci];
@@ -1064,8 +1077,9 @@ var Simple = (function () {
       var rc = [], kind = "recall";
       if (dn === days && days >= 3) kind = "mock";
       else if (dn % 6 === 0) kind = "test";
+      if (dh[dn - 1] < 0.25) kind = "off";
       if (kind === "recall") { rc = doneSoFar.slice(-2).reverse(); }
-      dayList.push({ n: dn, date: addDays(start, dn - 1), slices: sl, recH: recH, kind: kind, recall: rc, free: sl.length === 0, testOn: doneSoFar.length });
+      dayList.push({ n: dn, date: addDays(start, dn - 1), slices: sl, hours: dh[dn - 1], recH: recH, kind: kind, recall: rc, free: sl.length === 0, testOn: doneSoFar.length });
       finished.forEach(function (f) { doneSoFar.push(f); });
     }
     var rankSorted = D.chapters.filter(function (c) { return !c.noData; }).sort(function (a, b) { return W[b.id].share - W[a.id].share; }).map(function (c) { return c.id; });
@@ -1088,7 +1102,7 @@ var Simple = (function () {
     });
     skipped.sort(function (a, b) { return b.value - a.value; });
     return {
-      days: days, hours: H, totalH: r2(totalH), studyH: r2(studyH), usedH: r2(cum), spareH: r2(Math.max(0, chapterH - cum)), buffer: buf, reserveH: r2(totalH - studyH),
+      days: days, hours: r2(totalH / days), totalH: r2(totalH), studyH: r2(studyH), usedH: r2(cum), spareH: r2(Math.max(0, chapterH - cum)), buffer: buf, reserveH: r2(totalH - studyH),
       order: order, dayList: dayList, recH: r2(recH), skipped: skipped, end: addDays(start, days - 1), start: start,
       shortened: order.filter(function (i) { return i.mode === "short"; }).length, keyOnly: order.filter(function (i) { return i.mode === "key"; }).length,
       allFit: sumFull <= budget + 1e-9
@@ -1105,12 +1119,12 @@ var Simple = (function () {
 <script>
 (function () {
   var KEY = "physics-planner-v1", EXAM = "2027-01-20", END = "2027-01-19", MINDAYS = 7, D = PLANNER_DATA, $ = function (id) { return document.getElementById(id); };
-  var S = { days: 60, hours: 4, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
+  var S = { days: 60, hours: 3, hW: 3, hS: 4, dayH: {}, dayN: {}, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
   var SEED = window.__PLANNER_SEED || null, stored = null;
   try { var raw = window.localStorage.getItem(KEY); if (raw) stored = JSON.parse(raw); } catch (e) { }
   var o = stored;
   if (SEED && (!stored || (SEED.savedAt || 0) > (stored.savedAt || 0))) o = SEED;
-  if (o) { S = Object.assign(S, o); S.days = totalDays(S.start); if (!S.status || typeof S.status !== "object") S.status = {}; }
+  if (o) { S = Object.assign(S, o); if (o.hW == null && o.hours != null) { S.hW = o.hours; S.hS = o.hours; } S.days = totalDays(S.start); if (!S.status || typeof S.status !== "object") S.status = {}; if (!S.dayH) S.dayH = {}; if (!S.dayN) S.dayN = {}; }
   var saveOk = true, resetting = false;
   function save(keepTs) { if (resetting) return; if (!keepTs) S.savedAt = Date.now(); try { window.localStorage.setItem(KEY, JSON.stringify(S)); saveOk = true; } catch (e) { saveOk = false; } var el = document.getElementById("saved"); if (el) el.textContent = saveOk ? "Your entries are saved automatically on this device and browser." : "This browser is blocking storage (private mode?), so entries cannot be saved."; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
@@ -1126,13 +1140,14 @@ var Simple = (function () {
     '<li><b>Time the chapter really needs.</b> Each chapter has a base time for learning it fresh and for revising it. Your rating moves it between the two.</li>' +
     '<li><b>Marks still to win per hour.</b> Marks at stake multiplied by how far you are from a solid score. This is what decides what to keep when time is short.</li>' +
     '<li><b>Order.</b> Prerequisites come first (Vectors, then Kinematics, then Newton\'s Laws, and so on). Chapters that many others build on come early.</li>' +
-    '<li><b>Your calendar.</b> Your start date, days and hours. Each day, 80% goes to new chapter study and 20% to recalling earlier chapters, with a timed test every sixth day and a full mock on the last day.</li>' +
+    '<li><b>Your calendar.</b> Your start date, and the hours you can give on weekdays, on Sundays and on any single date. Each day, 80% goes to new chapter study and 20% to recalling earlier chapters, with a timed test every sixth day and a full mock on the last day.</li>' +
     '<li><b>When time is short.</b> Best use of time keeps the highest-value chapters and covers some by key topics only. Fit everything shortens every chapter when time is short, and extends them with extra practice when time is ample, keeping at most the last 3 days for tests and buffer. Either way, if a chapter is left out, you are told.</li></ol>' +
     '<p class="small faint">Limits, stated plainly: NTA does not publish chapter-wise counts. 2022 to 2025 figures come from coaching-institute analyses, and 2026 was tagged by AI from the 19 papers and has not been checked by a person. Treat the plan as a strong starting point, not a guarantee.</p></div></details>';
   $("app").innerHTML = '<details class="glass fold" id="cust"><summary>Let\'s Customize the Plan for You</summary>' +
     '<form id="f" class="form fold-in" novalidate>' +
     '<div class="fields">' +
-    '<label>Hours per day<input id="hours" type="number" min="0.5" max="16" step="0.5" inputmode="decimal" value="' + S.hours + '"></label>' +
+    '<label>Hours on weekdays (Mon to Sat)<input id="hw" type="number" min="0" max="16" step="0.5" inputmode="decimal" value="' + S.hW + '"></label>' +
+    '<label>Hours on Sundays<input id="hs" type="number" min="0" max="16" step="0.5" inputmode="decimal" value="' + S.hS + '"></label>' +
     '<label>How many days of buffer or test time do you want?<input id="buffer" type="number" min="0" max="30" step="1" inputmode="numeric" value="' + S.buffer + '"></label>' +
     '<label><span>Start date<b class="req">required</b></span><input id="start" type="date" required></label>' +
     '</div>' +
@@ -1142,6 +1157,7 @@ var Simple = (function () {
     '<label class="mode"><input type="radio" name="mode" value="all"><span><b>Fit everything</b><i>Keeps every chapter and shortens each one. Drops chapters only if even that cannot fit.</i></span></label>' +
     '</div>' +
     '<p class="muted small">If you have more time than the chapters need, the planner always fits everything, whichever type you choose.</p>' +
+    '<section class="cal"><div class="row sp"><h2>Your calendar</h2><button type="button" class="btn alt" id="calreset">Clear my edits</button></div><p class="muted small">Each date shows the hours you can give Physics. Change any date for exams, pre-boards or travel, and add a short note such as "Pre-board". Dates you changed are outlined.</p><div id="calbox" class="calwrap"></div><p id="caltot" class="muted small" aria-live="polite"></p></section>' +
     '<section class="prep"><div class="row sp"><h2>Your preparation, chapter by chapter</h2><label class="all">Set all to <input id="all" type="number" min="0" max="10" step="1" inputmode="numeric" value="7"></label></div><p class="muted small">0 = not started, 10 = exam ready. Default is 7.</p><div class="cgrid">' + chapterInputs + '</div></section>' +
     '<div class="row"><button class="btn" type="submit">Make my plan</button><span id="err" class="err" role="alert"></span></div>' +
     '</form></details>' + intro + '<div id="out"></div>' +
@@ -1153,15 +1169,51 @@ var Simple = (function () {
   $("all").addEventListener("input", function () { if (this.value === "") return; var v = clampv(this.value); document.querySelectorAll("[data-ch]").forEach(function (i) { i.value = v; }); });
 
 
+  var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  function dayHoursArr(startISO, n, dH, hW, hS) { var a = [], s = pD(startISO); for (var i = 0; i < n; i++) { var d = addD(s, i), v = dH && dH[iso(d)]; a.push(v != null ? +v : (d.getDay() === 0 ? hS : hW)); } return a; }
+  function dfl(k) { return pD(k).getDay() === 0 ? S.hS : S.hW; }
+  function updTot() { var st = $("start").value, n = totalDays(st); if (!st || n < 1) { $("caltot").textContent = ""; return; } var t = dayHoursArr(st, n, S.dayH, S.hW, S.hS).reduce(function (a, b) { return a + b; }, 0); $("caltot").textContent = "Physics time available: " + fh(t) + " h across " + n + " days (until 19 Jan 2027)."; }
+  function buildCal() {
+    var box = $("calbox"), st = $("start").value, n = totalDays(st);
+    if (!st || n < 1) { box.innerHTML = '<p class="muted small">Pick a start date to see your calendar.</p>'; $("caltot").textContent = ""; return; }
+    var s = pD(st), h = "", curM = -1;
+    for (var i = 0; i < n; i++) {
+      var d = addD(s, i), k = iso(d), mk = d.getFullYear() * 12 + d.getMonth();
+      if (mk !== curM) {
+        if (curM !== -1) h += '</div></div>';
+        curM = mk;
+        h += '<div class="calm"><h3>' + MN[d.getMonth()] + ' ' + d.getFullYear() + '</h3><div class="calg">' + ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map(function (x) { return '<span class="calh">' + x + '</span>'; }).join('');
+        for (var b = 0; b < (d.getDay() + 6) % 7; b++) h += '<span></span>';
+      }
+      var ov = S.dayH[k] != null, val = ov ? S.dayH[k] : dfl(k), nt = S.dayN[k] || "", lbl = WD[d.getDay()] + " " + d.getDate() + " " + MN[d.getMonth()];
+      h += '<div class="cell' + (d.getDay() === 0 ? ' sun' : '') + (ov ? ' ov' : '') + '"><span class="dn">' + d.getDate() + '</span><input class="ch" type="number" min="0" max="16" step="0.5" inputmode="decimal" data-iso="' + k + '" value="' + val + '" aria-label="Physics hours on ' + lbl + '"><input class="cn" type="text" maxlength="24" placeholder="note" data-note="' + k + '" value="' + esc(nt) + '" aria-label="Note for ' + lbl + '"></div>';
+    }
+    box.innerHTML = h + '</div></div>'; updTot();
+  }
+  $("calbox").addEventListener("input", function (e) {
+    var t = e.target, k = t.getAttribute("data-iso"), nk = t.getAttribute("data-note");
+    if (k) {
+      var v = parseFloat(t.value); if (t.value === "" || isNaN(v)) return;
+      v = Math.max(0, Math.min(16, v));
+      if (Math.abs(v - dfl(k)) < 1e-9) delete S.dayH[k]; else S.dayH[k] = v;
+      var c = t.closest(".cell"); if (c) c.classList.toggle("ov", S.dayH[k] != null);
+      updTot();
+    } else if (nk) { var s = t.value.trim(); if (s) S.dayN[nk] = s; else delete S.dayN[nk]; }
+    save();
+  });
+  $("calreset").addEventListener("click", function () { S.dayH = {}; S.dayN = {}; save(); buildCal(); });
+  $("f").addEventListener("input", function (e) { var id = e.target && e.target.id; if (id === "hw" || id === "hs" || id === "start") { collect(); buildCal(); } });
+  $("f").addEventListener("change", function (e) { var id = e.target && e.target.id; if (id === "start") { collect(); buildCal(); } });
   if (S.start) $("start").value = S.start;
+  buildCal();
   $("start").max = iso(addD(pD(END), -(MINDAYS - 1)));
   function updCd() { var v = $("start").value; $("cd").textContent = cdLine(v); }
   $("start").addEventListener("input", updCd); $("start").addEventListener("change", updCd); updCd();
   function collect() {
-    var h = parseFloat($("hours").value), b = parseInt($("buffer").value, 10), over = {};
+    var hw = parseFloat($("hw").value), hs = parseFloat($("hs").value), b = parseInt($("buffer").value, 10), over = {};
     document.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = i.value === "" ? (S.over[i.getAttribute("data-ch")] != null ? S.over[i.getAttribute("data-ch")] : 7) : clampv(i.value); });
     var m = document.querySelector("input[name=mode]:checked");
-    S.hours = isNaN(h) ? S.hours : h; S.buffer = isNaN(b) ? S.buffer : b; S.start = $("start").value; S.mode = m ? m.value : S.mode; S.over = over; S.days = totalDays(S.start);
+    S.hW = isNaN(hw) ? S.hW : hw; S.hS = isNaN(hs) ? S.hS : hs; S.hours = S.hW; S.buffer = isNaN(b) ? S.buffer : b; S.start = $("start").value; S.mode = m ? m.value : S.mode; S.over = over; S.days = totalDays(S.start);
   }
   function persist() { if (resetting) return; collect(); save(); }
   $("f").addEventListener("input", persist); $("f").addEventListener("change", persist);
@@ -1176,8 +1228,8 @@ var Simple = (function () {
   $("myes").addEventListener("click", function () {
     resetting = true;
     try { window.localStorage.removeItem(KEY); if (SEED) window.localStorage.setItem(KEY, JSON.stringify({ savedAt: Date.now() })); } catch (e) { }
-    S = { days: 60, hours: 4, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
-    $("hours").value = 4; $("buffer").value = 3; $("start").value = ""; $("all").value = 7;
+    S = { days: 60, hours: 3, hW: 3, hS: 4, dayH: {}, dayN: {}, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
+    $("hw").value = 3; $("hs").value = 4; buildCal(); $("buffer").value = 3; $("start").value = ""; $("all").value = 7;
     document.querySelectorAll("[data-ch]").forEach(function (i) { i.value = 7; });
     document.querySelectorAll("input[name=mode]").forEach(function (r) { r.checked = r.value === "best"; });
     $("out").innerHTML = ""; $("err").textContent = ""; rpMsg = "";
@@ -1189,15 +1241,18 @@ var Simple = (function () {
 
   $("f").addEventListener("submit", function (e) {
     e.preventDefault();
-    var days = totalDays($("start").value), buffer = parseInt($("buffer").value, 10), hours = parseFloat($("hours").value), start = $("start").value, level = 7, err = $("err");
+    var days = totalDays($("start").value), buffer = parseInt($("buffer").value, 10), hw = parseFloat($("hw").value), hs = parseFloat($("hs").value), start = $("start").value, level = 7, err = $("err");
+    collect();
     if (!start) { err.textContent = "Choose a start date."; $("start").focus(); return; }
     if (days < MINDAYS) { err.textContent = "Start on or before " + fd(addD(pD(END), -(MINDAYS - 1))) + " 2027 so the plan has at least " + MINDAYS + " days before JEE Main (20 Jan 2027)."; $("start").focus(); return; }
-    if (!(hours >= 0.5 && hours <= 16)) { err.textContent = "Hours per day must be between 0.5 and 16."; $("hours").focus(); return; }
+    if (!(hw >= 0 && hw <= 16)) { err.textContent = "Weekday hours must be between 0 and 16."; $("hw").focus(); return; }
+    if (!(hs >= 0 && hs <= 16)) { err.textContent = "Sunday hours must be between 0 and 16."; $("hs").focus(); return; }
+    if (dayHoursArr(start, days, S.dayH, hw, hs).reduce(function (a, b) { return a + b; }, 0) < 5) { err.textContent = "Your calendar has less than 5 hours of Physics time in total. Add more hours."; return; }
     if (!(buffer >= 0 && buffer < days)) { err.textContent = "Buffer days must be 0 or more, and fewer than your total days."; $("buffer").focus(); return; }
     err.textContent = "";
     var over = {}; document.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = clampv(i.value); });
     var mode = document.querySelector("input[name=mode]:checked").value;
-    S = { days: days, hours: hours, buffer: buffer, level: level, start: start, mode: mode, over: over, planned: true, status: S.status || {} }; save();
+    S = { days: days, hours: hw, hW: hw, hS: hs, dayH: S.dayH || {}, dayN: S.dayN || {}, buffer: buffer, level: level, start: start, mode: mode, over: over, planned: true, status: S.status || {} }; save();
     delete S.rp; view();
     $("out").scrollIntoView({ behavior: "smooth", block: "start" });
   });
@@ -1256,14 +1311,16 @@ var Simple = (function () {
   function dayDiff(a, b) { return Math.round((Date.UTC(a.getFullYear(), a.getMonth(), a.getDate()) - Date.UTC(b.getFullYear(), b.getMonth(), b.getDate())) / 864e5); }
   function iso(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
   function curPlan() {
-    if (S.rp) return Simple.build({ days: S.rp.rem, hours: S.rp.hours, buffer: S.rp.buffer, level: 7, start: S.rp.from, mode: S.rp.mode, over: S.rp.over, exclude: S.rp.ex });
-    return Simple.build(S);
+    if (S.rp) return Simple.build({ days: S.rp.rem, hours: S.rp.hours, dayHours: S.rp.dh, buffer: S.rp.buffer, level: 7, start: S.rp.from, mode: S.rp.mode, over: S.rp.over, exclude: S.rp.ex });
+    return Simple.build({ days: S.days, hours: S.hW, dayHours: dayHoursArr(S.start, S.days, S.dayH, S.hW, S.hS), buffer: S.buffer, level: S.level, start: S.start, mode: S.mode, over: S.over });
   }
   function rowsOf(p, off) {
     return p.dayList.map(function (d) {
       var main = d.slices.length ? d.slices.map(function (s) { return esc(s.it.c.name) + ' <i>' + fh(s.h) + ' h</i>'; }).join(' + ') : 'Buffer and test day: practice papers and weak-spot revision';
       var rc = d.kind === 'mock' ? 'Full-length mock paper, then review mistakes' : d.kind === 'test' ? (d.testOn ? 'Timed test on the chapters finished so far' : 'Practice problems') : d.recall.length ? 'Recall: ' + esc(d.recall.map(function (c) { return c.c.name; }).join(' and ')) : 'Practice problems';
-      return { n: off + d.n, d: iso(d.date), m: main, r: fh(d.recH) + ' h · ' + rc };
+      var nts = S.rp ? (S.rp.dn || {}) : (S.dayN || {}), tg = nts[iso(d.date)] || "";
+      if (d.kind === 'off') return { n: off + d.n, d: iso(d.date), m: 'No Physics time planned', r: 'Rest or other commitments', t: esc(tg) };
+      return { n: off + d.n, d: iso(d.date), m: main, r: fh(d.hours) + ' h · ' + rc + ' (' + fh(d.recH) + ' h)', t: esc(tg) };
     });
   }
   function view() { render(curPlan()); }
@@ -1278,7 +1335,7 @@ var Simple = (function () {
     var hist = all.filter(function (r) { return r.n <= off; });
     var ex = [], nd = 0, ns = 0;
     D.chapters.forEach(function (c) { var s = S.status[c.id]; if (s === "done") { ex.push(c.id); nd++; } else if (s === "skipped") { ex.push(c.id); ns++; } });
-    S.rp = { from: todayISO(), rem: total - off, hist: hist, ex: ex, hours: S.hours, buffer: S.buffer, mode: S.mode, over: JSON.parse(JSON.stringify(S.over)), done: nd, left: ns };
+    S.rp = { from: todayISO(), rem: total - off, hist: hist, ex: ex, hours: S.hW, dh: dayHoursArr(todayISO(), total - off, S.dayH, S.hW, S.hS), dn: JSON.parse(JSON.stringify(S.dayN)), buffer: S.buffer, mode: S.mode, over: JSON.parse(JSON.stringify(S.over)), done: nd, left: ns };
     save();
     view();
     var p = curPlan();
@@ -1297,7 +1354,7 @@ var Simple = (function () {
     h += '<div class="note ok" id="cdn"><b>' + esc(cdLine(S.start)) + '</b></div>';
     h += '<div class="rpbar glass"><p><b>Falling behind?</b> Tick Done on what you have finished, then re-plan. Everything you have not finished is re-packed into the days left, and the plan still ends on ' + fd(rp ? p.end : p.end) + '. Chapters you marked Skipped stay out.</p><div class="acts"><button type="button" class="btn" data-rp="go">Re-plan from today</button>' + (rp ? '<button type="button" class="btn alt" data-rp="undo">Back to original plan</button>' : '') + '</div>' + (rpMsg ? '<p id="rpmsg" class="rpmsg" role="status">' + esc(rpMsg) + '</p>' : '') + '</div>';
     if (!p.order.length) h += '<div class="note ok">Nothing left to plan: every chapter is either done or left out. Use the days for practice papers.</div>';
-    h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days × ' + fh(p.hours) + ' h = ' + fh(p.totalH) + ' h. Each day: ' + fh(p.hours - p.recH) + ' h of chapter study and ' + fh(p.recH) + ' h of recall and tests.</p>';
+    h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days · ' + fh(p.totalH) + ' h of Physics time in total. On each day about 80% goes to chapter study and 20% to recall and tests.</p>';
     if (p.skipped.length) h += '<div class="warn" role="alert"><b>Not enough time for everything.</b> The ' + p.skipped.length + ' lowest-priority chapter' + (p.skipped.length > 1 ? 's are' : ' is') + ' skipped (listed below). Add days or hours to bring ' + (p.skipped.length > 1 ? 'them' : 'it') + ' back.</div>';
     if (p.keyOnly) h += '<div class="note">' + p.keyOnly + ' chapter' + (p.keyOnly > 1 ? 's are' : ' is') + ' covered by key topics only, to save time.</div>';
     if (p.shortened) h += '<div class="note">' + p.shortened + ' chapter' + (p.shortened > 1 ? 's are' : ' is') + ' shortened to fit.</div>';
@@ -1312,7 +1369,7 @@ var Simple = (function () {
     h += '</div>';
     h += '<details class="glass days" open><summary>Day-by-day schedule (' + (off + p.days) + ' days' + (rp ? ', earlier days shown faded' : '') + ')</summary><div class="dl">';
     (rp ? rp.hist : []).concat(rowsOf(p, off)).forEach(function (r) {
-      h += '<div class="dr' + (r.n <= off ? ' past' : '') + '"><span class="d">Day ' + r.n + '<small>' + fd(pD(r.d)) + '</small></span><span class="m">' + r.m + '</span><span class="rc">' + r.r + '</span></div>';
+      h += '<div class="dr' + (r.n <= off ? ' past' : '') + '"><span class="d">Day ' + r.n + '<small>' + WD[pD(r.d).getDay()] + ' ' + fd(pD(r.d)) + '</small>' + (r.t ? '<small class="tag">' + r.t + '</small>' : '') + '</span><span class="m">' + r.m + '</span><span class="rc">' + r.r + '</span></div>';
     });
     h += '</div></details>';
     if (rp && rp.ex.length) {
@@ -1326,7 +1383,7 @@ var Simple = (function () {
     $("out").innerHTML = h;
   }
   save(true);
-  if (S.planned && S.start && S.hours >= 0.5) { try { view(); } catch (e) { } }
+  if (S.planned && S.start) { try { view(); } catch (e) { } }
 })();
 
 </script>
