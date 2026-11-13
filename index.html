@@ -55,17 +55,19 @@ input[type=range]{width:100%;accent-color:var(--lav);min-height:32px}
 .btn:hover{filter:brightness(1.08)}
 .err{color:var(--bad);font-size:14px}
 .sum{color:var(--muted);font-size:15px}
+.ring{display:inline-block;min-width:1.9em;padding:.02em .3em;border:2.5px solid var(--lav);border-radius:999px;text-align:center;color:var(--ink);background:rgba(190,170,255,.14);box-shadow:0 0 18px rgba(190,170,255,.45);line-height:1.15;margin:0 .1em;white-space:nowrap}
 .warn{border:1px solid rgba(255,211,122,.45);background:rgba(255,211,122,.1);color:var(--warn);border-radius:16px;padding:12px 16px}
 .warn b{color:var(--warn)}
 .note{border:1px solid var(--edge);background:var(--glass);border-radius:16px;padding:10px 16px;color:var(--muted);font-size:14px}.note.ok{color:var(--mint)}
-.seq{padding:6px 8px;overflow:hidden}
-.r{display:grid;grid-template-columns:34px minmax(140px,1.4fr) 214px 1fr .55fr .7fr 1.1fr 1.2fr;gap:10px;align-items:center;padding:12px 10px;border-top:1px solid var(--edge);font-size:14px}
+.seq{padding:0 8px 8px;overflow:hidden}
+.r{display:grid;grid-template-columns:34px minmax(140px,1.4fr) 214px 216px .55fr .7fr 1.1fr 1.2fr;gap:10px;align-items:center;padding:12px 10px;border-top:1px solid var(--edge);font-size:14px}
 .r:first-child{border-top:0}
 .r.hd{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);padding-block:10px}
 .r .n{font:500 13px var(--f-mono);color:var(--faint)}
 .r .nm{font-weight:500}.r small{display:block;font-weight:400;color:var(--muted);font-size:12px;margin-top:2px}
 .num{font-family:var(--f-mono);font-variant-numeric:tabular-nums;font-size:13px}
-.act{color:var(--sky);font-size:13px}.q{color:var(--muted)}
+.dt{white-space:nowrap}.act{color:var(--sky);font-size:13px}.q{color:var(--muted)}
+.sub>summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px}.sub>summary::-webkit-details-marker{display:none}.sub>summary h2{margin:0}.sub>summary::after{content:"";width:9px;height:9px;border-right:2px solid var(--lav);border-bottom:2px solid var(--lav);transform:rotate(45deg);margin-left:auto;transition:transform .25s}.sub[open]>summary::after{transform:rotate(-135deg)}.sub>summary~*{margin-top:10px}
 .skp{padding:16px 20px}.skp summary{cursor:pointer;font-weight:500}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}.chip{border:1px solid var(--edge);background:rgba(255,255,255,.04);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted)}
 @media (max-width:820px){
@@ -73,7 +75,7 @@ input[type=range]{width:100%;accent-color:var(--lav);min-height:32px}
  .r{grid-template-columns:30px minmax(0,1fr) auto;grid-template-areas:"n nm h" ". st st" ". dt dt" ". w w" ". q q" ". act act";row-gap:4px}
  .r .st{grid-area:st}.r .n{grid-area:n}.r .nm{grid-area:nm}.r span:nth-child(5){grid-area:h;text-align:right}.r .dt{grid-area:dt;color:var(--muted)}
  .r span:nth-child(6){grid-area:w}.r .q{grid-area:q}.r .q::before{content:"Asked per year ";color:var(--faint)}.r .act{grid-area:act}
- .r span:nth-child(6)::before{content:"Weightage ";color:var(--faint)}.r .nm small{font-size:12px}
+ .r span:nth-child(6)::before{content:"Avg marks per paper ";color:var(--faint)}.r .nm small{font-size:12px}
 }
 @media print{.glow,#board,.vig{display:none}body{background:#fff;color:#000}.glass{background:#fff;border-color:#bbb}}
 
@@ -204,16 +206,17 @@ html,body{background:#fff!important}
     var cx = P[0] - Math.sin(th) * 12, cy = P[1] - Math.cos(th) * 12;
     A(c, cx, cy, cx, cy + 46); T(c, "mg", cx + 4, cy + 52);
     A(c, cx, cy, cx - Math.sin(th) * 44, cy - Math.cos(th) * 44); T(c, "N", cx - 30, cy - 38);
-    A(c, cx, cy, cx - Math.cos(th) * 36, cy + Math.sin(th) * 36); T(c, "f", cx - 46, cy + 22);
+    A(c, cx, cy, cx + Math.cos(th) * 36, cy - Math.sin(th) * 36); T(c, "f", cx + 38, cy - 22);
     c.beginPath(); c.arc(30, 165, 34, -th, 0); c.stroke(); T(c, "θ", 66, 160);
   };
   K.atwood = function (c, t) {
-    var d = 14 * Math.sin(t * 1.3);
-    L(c, 95, 16, 165, 16); hatch(c, 165, 8, 16, -1); L(c, 130, 16, 130, 34); C(c, 130, 50, 16); C(c, 130, 50, 2, 1);
-    L(c, 114, 50, 114, 96 + d); L(c, 146, 50, 146, 96 - d);
-    c.beginPath(); c.rect(98, 96 + d, 32, 30); c.stroke(); c.beginPath(); c.rect(130, 96 - d, 32, 38); c.stroke();
-    T(c, "m₁", 106, 117 + d, 18); T(c, "m₂", 138, 120 - d, 18);
-    A(c, 80, 130, 80, 130 + 22 * Math.sign(d || 1) * -1, 6); T(c, "a", 66, 142, 16); T(c, "T", 100, 76, 16); T(c, "T", 152, 76, 16);
+    var s = reduce ? .5 : (t * .35) % 1, d = 14 - 28 * s * s;   // m2 is heavier: it speeds up downward, m1 speeds up upward
+    L(c, 80, 16, 180, 16); hatch(c, 180, 8, 16, -1); L(c, 130, 16, 130, 26); C(c, 130, 50, 24); C(c, 130, 50, 2, 1);
+    L(c, 106, 50, 106, 96 + d); L(c, 154, 50, 154, 96 - d);
+    c.beginPath(); c.rect(90, 96 + d, 32, 30); c.stroke(); c.beginPath(); c.rect(138, 96 - d, 32, 38); c.stroke();
+    T(c, "m₁", 98, 117 + d, 18); T(c, "m₂", 146, 120 - d, 18);
+    A(c, 66, 126, 66, 100, 6); T(c, "a", 52, 118, 16); A(c, 194, 100, 194, 126, 6); T(c, "a", 202, 118, 16);
+    T(c, "T", 110, 76, 16); T(c, "T", 138, 76, 16);
   };
   K.projectile = function (c, t) {
     L(c, 15, 165, 245, 165); var u = reduce ? .35 : (t * .28) % 1, H = 100;
@@ -221,7 +224,7 @@ html,body{background:#fff!important}
     D(c, 1); c.beginPath(); for (var i = 0; i <= 40; i++) { var q = pt(i / 40); if (i) c.lineTo(q[0], q[1]); else c.moveTo(q[0], q[1]); } c.stroke(); D(c, 0);
     var b = pt(u); C(c, b[0], b[1], 6, 1);
     A(c, b[0], b[1], b[0] + 28, b[1], 5); A(c, b[0], b[1], b[0], b[1] - 36 * (1 - 2 * u), 5);
-    A(c, 32, 165, 62, 143, 5); T(c, "v₀", 66, 142, 16); T(c, "R", 126, 182, 16); L(c, 32, 175, 222, 175); L(c, 127 - 0, 60, 127, 66); T(c, "H", 132, 70, 15);
+    A(c, 32, 165, 62, 143, 5); T(c, "v₀", 66, 142, 16); L(c, 32, 174, 222, 174); A(c, 127, 174, 32, 174, 5); A(c, 127, 174, 222, 174, 5); T(c, "R", 122, 189, 16); D(c, 1); L(c, 127, 66, 127, 163); D(c, 0); A(c, 127, 118, 127, 66, 5); A(c, 127, 118, 127, 163, 5); T(c, "H", 134, 124, 15);
   };
   K.pendulum = function (c, t) {
     var th = .55 * Math.cos(reduce ? 0.6 : t * 1.7), Lg = 130, px = 130, py = 16, bx = px + Lg * Math.sin(th), by = py + Lg * Math.cos(th);
@@ -233,7 +236,7 @@ html,body{background:#fff!important}
   K.spring = function (c, t) {
     var x = 150 + 42 * Math.sin(reduce ? .8 : t * 1.9);
     L(c, 20, 20, 20, 140); hatch(c, 20, 20, 140, 1); L(c, 20, 140, 245, 140);
-    zig(c, 20, 100, x, 100, 10, 9); c.beginPath(); c.rect(x, 78, 40, 62); c.fillStyle = "rgba(255,255,255,.12)"; c.fill(); c.stroke();
+    zig(c, 20, 100, x, 100, 10, 9); c.beginPath(); c.rect(x, 78, 40, 62); c.save(); c.fillStyle = "rgba(255,255,255,.12)"; c.fill(); c.restore(); c.stroke();
     D(c, 1); L(c, 150 + 20, 62, 150 + 20, 150); D(c, 0); T(c, "x = 0", 138, 160, 16); T(c, "k", 60, 80, 17); T(c, "m", x + 14, 112, 18);
     A(c, x + 20, 70, x + 20 - 28 * Math.sign(Math.sin(t * 1.9 || 1)), 70, 6); T(c, "F = −kx", 90, 50, 17);
   };
@@ -256,30 +259,51 @@ html,body{background:#fff!important}
   var dip = null;
   K.dipole = function (c) {
     if (!dip) {
-      dip = []; var qs = [[95, 95, 1], [165, 95, -1]];
+      dip = []; var qs = [[95, 95, 1], [165, 95, -1]], X0 = 130;
       function E(x, y) { var ex = 0, ey = 0; qs.forEach(function (q) { var dx = x - q[0], dy = y - q[1], r2 = dx * dx + dy * dy, r = Math.sqrt(r2); ex += q[2] * dx / (r2 * r); ey += q[2] * dy / (r2 * r); }); return [ex, ey]; }
-      for (var k = 0; k < 14; k++) {
-        var a = TAU * k / 14, x = 95 + 7 * Math.cos(a), y = 95 + 7 * Math.sin(a), pts = [[x, y]];
-        for (var s = 0; s < 500; s++) { var e = E(x, y), m = Math.hypot(e[0], e[1]); x += 2.2 * e[0] / m; y += 2.2 * e[1] / m; if (Math.hypot(x - 165, y - 95) < 7 || x < -20 || x > 280 || y < -20 || y > 210) break; pts.push([x, y]); }
-        dip.push(pts);
+      for (var k = 0; k < 16; k++) {
+        var a = TAU * k / 16, x = 95 + 7 * Math.cos(a), y = 95 + 7 * Math.sin(a), pts = [[x, y]], ended = false;
+        for (var s = 0; s < 900; s++) {
+          var e = E(x, y), m = Math.hypot(e[0], e[1]); x += 2 * e[0] / m; y += 2 * e[1] / m;
+          if (Math.hypot(x - 165, y - 95) < 7) { ended = true; break; }
+          if (x < 0 || x > 260 || y < 0 || y > 190) break;
+          pts.push([x, y]);
+        }
+        dip.push({ p: pts, rev: false });
+        // a line that leaves the frame on the left comes back in from the right (mirror image), ending on the negative charge
+        if (!ended) dip.push({ p: pts.map(function (q) { return [2 * X0 - q[0], q[1]]; }), rev: true });
       }
     }
-    dip.forEach(function (pts) { c.beginPath(); pts.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.stroke(); var m = pts[Math.floor(pts.length / 2)], n = pts[Math.floor(pts.length / 2) + 1]; if (n) A(c, m[0], m[1], n[0], n[1], 5); });
+    dip.forEach(function (l) {
+      var pts = l.p; c.beginPath(); pts.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.stroke();
+      var i0 = Math.max(1, Math.floor(pts.length * (l.rev ? .45 : .5))), a0 = pts[i0], b0 = pts[i0 + 1];
+      if (b0) { if (l.rev) A(c, b0[0], b0[1], a0[0], a0[1], 5); else A(c, a0[0], a0[1], b0[0], b0[1], 5); }
+    });
     C(c, 95, 95, 7, 1); C(c, 165, 95, 7, 1); T(c, "+", 91, 100, 16); T(c, "−", 161, 99, 16);
   };
   K.magnetic = function (c, t) {
     for (var i = 0; i < 4; i++) for (var j = 0; j < 3; j++) { var x = 40 + i * 64, y = 28 + j * 66; c.save(); c.globalAlpha *= .6; C(c, x, y, 5); L(c, x - 3, y - 3, x + 3, y + 3); L(c, x - 3, y + 3, x + 3, y - 3); c.restore(); }
-    var a = reduce ? 1 : t * 1.4, cx = 130, cy = 95, r = 46, px = cx + r * Math.cos(a), py = cy + r * Math.sin(a);
-    D(c, 1); C(c, cx, cy, r); D(c, 0); C(c, px, py, 6, 1); A(c, px, py, px - 34 * Math.sin(a), py + 34 * Math.cos(a), 6); A(c, px, py, px - 28 * Math.cos(a), py - 28 * Math.sin(a), 6);
-    T(c, "v", px - 40 * Math.sin(a) + 4, py + 40 * Math.cos(a), 17); T(c, "F", px - 36 * Math.cos(a), py - 30 * Math.sin(a), 17); T(c, "B", 230, 40, 18); T(c, "r = mv / qB", 78, 182, 16);
+    var a = reduce ? -1 : -t * 1.4, cx = 130, cy = 95, r = 46, px = cx + r * Math.cos(a), py = cy + r * Math.sin(a);
+    D(c, 1); C(c, cx, cy, r); D(c, 0); C(c, px, py, 6, 1); T(c, "+", px - 3.5, py + 4, 11);
+    A(c, px, py, px + 34 * Math.sin(a), py - 34 * Math.cos(a), 6); A(c, px, py, px - 28 * Math.cos(a), py - 28 * Math.sin(a), 6);
+    T(c, "v", px + 40 * Math.sin(a) + 4, py - 40 * Math.cos(a), 17); T(c, "F", px - 36 * Math.cos(a), py - 30 * Math.sin(a), 17); T(c, "B", 246, 58, 18); T(c, "r = mv / qB", 78, 182, 16);
   };
-  var cyc = [[70, 52], [116, 66], [196, 112], [140, 126]], ctl = [[92, 50], [160, 80], [168, 124], [100, 78]];
+  var pvPts = null;
   K.pv = function (c, t) {
     A(c, 28, 165, 28, 14, 6); A(c, 28, 165, 248, 165, 6); T(c, "P", 12, 24, 18); T(c, "V", 238, 182, 18);
-    c.beginPath(); for (var s = 0; s < 4; s++) { var p0 = cyc[s], p1 = ctl[s], p2 = cyc[(s + 1) % 4]; if (!s) c.moveTo(p0[0], p0[1]); c.quadraticCurveTo(p1[0], p1[1], p2[0], p2[1]); } c.stroke();
-    ["A", "B", "C", "D"].forEach(function (n, i) { C(c, cyc[i][0], cyc[i][1], 3, 1); T(c, n, cyc[i][0] + (i === 2 ? 8 : -14), cyc[i][1] + (i > 1 ? 16 : -8), 17); });
-    T(c, "Tₕ", 90, 40, 15); T(c, "Tₐ", 130, 146, 15); T(c, "adiabatic", 176, 76, 14);
-    var u = reduce ? .3 : (t * .22) % 4, s2 = Math.floor(u), f = u - s2, q = bez(cyc[s2], ctl[s2], cyc[(s2 + 1) % 4], f); c.save(); c.fillStyle = INK; c.beginPath(); c.arc(q[0], q[1], 4, 0, TAU); c.fill(); c.restore();
+    if (!pvPts) {
+      var g = 5 / 3, sx = 34, sy = 38, ox = 40, oy = 160;
+      var X = function (V) { return ox + V * sx; }, Y = function (P) { return oy - P * sy; };
+      var segs = [[1, 2, function (V) { return 3 / V; }], [2, 5.64, function (V) { return 4.762 / Math.pow(V, g); }], [5.64, 2.83, function (V) { return 1.5 / V; }], [2.83, 1, function (V) { return 3 / Math.pow(V, g); }]];
+      pvPts = segs.map(function (sg) { var seg = []; for (var i = 0; i <= 30; i++) { var V = sg[0] + (sg[1] - sg[0]) * i / 30; seg.push([X(V), Y(sg[2](V))]); } return seg; });
+    }
+    c.beginPath(); pvPts.forEach(function (seg, si) { seg.forEach(function (q, i) { if (!si && !i) c.moveTo(q[0], q[1]); else c.lineTo(q[0], q[1]); }); }); c.stroke();
+    pvPts.forEach(function (seg) { var m = Math.floor(seg.length / 2); A(c, seg[m - 1][0], seg[m - 1][1], seg[m][0], seg[m][1], 6); });
+    var pts = [pvPts[0][0], pvPts[1][0], pvPts[2][0], pvPts[3][0]], off = [[-16, -6], [6, -8], [8, 14], [-16, 16]];
+    ["A", "B", "C", "D"].forEach(function (n, i) { C(c, pts[i][0], pts[i][1], 3, 1); T(c, n, pts[i][0] + off[i][0], pts[i][1] + off[i][1], 17); });
+    T(c, "T", 96, 66, 15); T(c, "h", 105, 70, 11); T(c, "T", 170, 158, 15); T(c, "c", 179, 162, 11); T(c, "adiabatic", 160, 96, 13);
+    var u = reduce ? .3 : (t * .25) % 4, s2 = Math.floor(u), f = u - s2, sg2 = pvPts[s2], q = sg2[Math.min(sg2.length - 1, Math.round(f * (sg2.length - 1)))];
+    c.save(); c.fillStyle = INK; c.beginPath(); c.arc(q[0], q[1], 4, 0, TAU); c.fill(); c.restore();
   };
   K.wave = function (c, t) {
     var k = TAU / 110, w = reduce ? 0 : t * 2.2; L(c, 15, 95, 245, 95); c.beginPath(); for (var x = 15; x <= 245; x += 3) { var y = 95 - 38 * Math.sin(k * x - w); if (x === 15) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
@@ -287,9 +311,9 @@ html,body{background:#fff!important}
     A(c, 190, 24, 236, 24, 6); T(c, "v", 208, 18, 17); A(c, 60, 158, 170, 158, 5); A(c, 170, 158, 60, 158, 5); T(c, "λ", 112, 152, 18); T(c, "y = A sin(kx − ωt)", 70, 184, 16);
   };
   K.bohr = function (c, t) {
-    var a = reduce ? 1 : t * 1.7, r = [22, 48, 78]; C(c, 130, 95, 4, 1); r.forEach(function (rr, i) { c.save(); c.globalAlpha *= .85; C(c, 130, 95, rr); c.restore(); T(c, "n=" + (i + 1), 130 + rr * .7 + 2, 95 - rr * .7 - 2, 14); });
+    var a = reduce ? 1 : t * 1.7, r = [8, 32, 72]; C(c, 130, 95, 4, 1); r.forEach(function (rr, i) { c.save(); c.globalAlpha *= .85; C(c, 130, 95, rr); c.restore(); T(c, "n=" + (i + 1), i ? 130 + rr * .7 + 2 : 80, i ? 95 - rr * .7 - 2 : 124, 14); });
     var ph = (t * .18) % 1, rr = ph < .5 ? r[2] : r[1]; c.save(); c.fillStyle = INK; c.beginPath(); c.arc(130 + rr * Math.cos(a), 95 + rr * Math.sin(a), 4, 0, TAU); c.fill(); c.restore();
-    c.beginPath(); for (var x = 0; x <= 40; x += 2) { var px = 190 + x, py = 160 + 8 * Math.sin(x * .6 - (reduce ? 0 : t * 6)); if (x) c.lineTo(px, py); else c.moveTo(px, py); } c.stroke(); T(c, "hν", 214, 148, 18); T(c, "Eₙ = −13.6 / n² eV", 16, 184, 15);
+    c.beginPath(); for (var x = 0; x <= 40; x += 2) { var px = 8 + x, py = 20 + 7 * Math.sin(x * .6 - (reduce ? 0 : t * 6)); if (x) c.lineTo(px, py); else c.moveTo(px, py); } c.stroke(); T(c, "hν", 16, 46, 18); T(c, "Eₙ = −13.6 / n² eV", 16, 184, 15);
   };
   K.kepler = function (c, t) {
     var a = 100, b = 62, e = Math.sqrt(1 - b * b / a / a), cx = 124, cy = 95, f = a * e;
@@ -306,7 +330,7 @@ html,body{background:#fff!important}
   };
   K.rc = function (c, t) {
     c.beginPath(); c.moveTo(20, 60); c.lineTo(20, 28); c.lineTo(46, 28); c.moveTo(94, 28); c.lineTo(112, 28); c.lineTo(112, 70); c.moveTo(112, 90); c.lineTo(112, 140); c.lineTo(20, 140); c.lineTo(20, 90); c.stroke();
-    zig(c, 46, 28, 94, 28, 5, 7); L(c, 12, 60, 28, 60); L(c, 16, 74, 24, 74); L(c, 112 - 12, 70, 112 + 12, 70); L(c, 112 - 12, 90, 112 + 12, 90); T(c, "R", 66, 20, 17); T(c, "C", 128, 84, 17); T(c, "V₀", 0, 80, 15);
+    zig(c, 46, 28, 94, 28, 5, 7); L(c, 12, 60, 28, 60); L(c, 16, 74, 24, 74); L(c, 112 - 12, 70, 112 + 12, 70); L(c, 112 - 12, 90, 112 + 12, 90); T(c, "R", 66, 20, 17); T(c, "C", 128, 84, 17); T(c, "V₀", 34, 90, 15); T(c, "+", 32, 62, 14);
     A(c, 150, 150, 150, 18, 6); A(c, 150, 150, 252, 150, 6); D(c, 1); L(c, 150, 38, 240, 38); D(c, 0);
     c.beginPath(); for (var x = 0; x <= 90; x += 3) { var y = 150 - 112 * (1 - Math.exp(-x / 28)); if (x) c.lineTo(150 + x, y); else c.moveTo(150, y); } c.stroke();
     var u = reduce ? 40 : (t * 22) % 90, py = 150 - 112 * (1 - Math.exp(-u / 28)); c.save(); c.fillStyle = INK; c.beginPath(); c.arc(150 + u, py, 3.5, 0, TAU); c.fill(); c.restore(); T(c, "V", 156, 22, 16); T(c, "t", 246, 168, 16); T(c, "τ = RC", 180, 112, 15);
@@ -320,12 +344,12 @@ html,body{background:#fff!important}
   K.youngs = function (c, t) {
     L(c, 60, 14, 60, 80); L(c, 60, 92, 60, 98); L(c, 60, 110, 60, 176); L(c, 214, 14, 214, 176); for (var y = 20; y < 172; y += 3) { var v = Math.cos(Math.PI * (y - 95) / 24); L(c, 216, y, 216 + 24 * v * v, y); }
     A(c, 12, 95, 52, 95, 6); if (!reduce) { c.save(); for (var s = 0; s < 3; s++) { var r = ((t * 34 + s * 30) % 90); c.globalAlpha = .5 * (1 - r / 90); [86, 104].forEach(function (yy) { c.beginPath(); c.arc(60, yy, r, -1.2, 1.2); c.stroke(); }); } c.restore(); } else { [86, 104].forEach(function (yy) { c.beginPath(); c.arc(60, yy, 40, -1.2, 1.2); c.stroke(); }); }
-    T(c, "S₁", 36, 82, 15); T(c, "S₂", 36, 118, 15); T(c, "d", 66, 100, 15); T(c, "D", 130, 186, 16); A(c, 62, 180, 212, 180, 5); T(c, "β = λD / d", 150, 22, 16);
+    T(c, "S₁", 36, 82, 15); T(c, "S₂", 36, 118, 15); T(c, "d", 70, 101, 15); T(c, "D", 130, 198, 16); A(c, 62, 180, 212, 180, 5); T(c, "β = λD / d", 78, 24, 16);
   };
   K.solenoid = function (c) {
     for (var i = 0; i < 10; i++) { c.beginPath(); c.ellipse(64 + i * 14, 95, 6, 28, 0, 0, TAU); c.stroke(); }
     [-12, 0, 12].forEach(function (d) { A(c, 50, 95 + d, 212, 95 + d, 6); });
-    c.beginPath(); c.ellipse(130, 95, 112, 70, 0, Math.PI * 1.02, Math.PI * 1.98); c.stroke(); c.beginPath(); c.ellipse(130, 95, 112, 70, 0, .02 * Math.PI, .98 * Math.PI); c.stroke(); A(c, 210, 26, 190, 26, 6); A(c, 50, 164, 74, 164, 6); T(c, "B = μ₀nI", 100, 186, 17); T(c, "I", 52, 70, 15);
+    c.beginPath(); c.ellipse(130, 95, 112, 70, 0, Math.PI * 1.02, Math.PI * 1.98); c.stroke(); c.beginPath(); c.ellipse(130, 95, 112, 70, 0, .02 * Math.PI, .98 * Math.PI); c.stroke(); A(c, 210, 26, 190, 26, 6); A(c, 74, 164, 50, 164, 6); T(c, "B = μ₀nI", 100, 186, 17); T(c, "I", 52, 70, 15);
   };
   K.photo = function (c, t) {
     c.beginPath(); c.rect(28, 40, 20, 100); c.stroke(); hatch(c, 28, 40, 140, 1); T(c, "metal", 18, 158, 15);
@@ -337,11 +361,11 @@ html,body{background:#fff!important}
   K.vt = function (c) {
     A(c, 30, 160, 30, 16, 6); A(c, 30, 160, 244, 160, 6); T(c, "v", 14, 26, 18); T(c, "t", 238, 178, 18);
     c.beginPath(); c.moveTo(30, 150); c.lineTo(100, 60); c.lineTo(170, 60); c.lineTo(224, 140); c.stroke(); D(c, 1); L(c, 100, 60, 100, 160); L(c, 170, 60, 170, 160); D(c, 0); c.save(); c.fillStyle = "rgba(255,255,255,.09)"; c.fill(); c.restore();
-    T(c, "slope = a", 40, 96, 16); T(c, "area = s", 112, 120, 17);
+    T(c, "slope = a", 34, 44, 16); T(c, "area = s", 102, 112, 14);
   };
   var F1 = ["F = ma", "v² = u² + 2as", "p = mv", "W = F·s cosθ", "τ = Iα", "KE = ½mv²"],
     F2 = ["PV = nRT", "ΔQ = ΔU + W", "η = 1 − Tc/Th", "v = fλ", "T = 2π√(l/g)", "g = GM / R²"],
-    F3 = ["∮ E·dA = q / ε₀", "F = qvB sinθ", "ε = −dΦ/dt", "E = hν − φ", "λ = h / p", "1/v − 1/u = 1/f"];
+    F3 = ["∮ E·dA = q / ε₀", "F = qvB sinθ", "ε = −dΦ/dt", "KE = hν − φ", "λ = h / p", "1/v − 1/u = 1/f"];
   function formulas(list) { return function (c) { list.forEach(function (s, i) { T(c, s, 14 + (i % 2) * 124, 40 + Math.floor(i / 2) * 52, 24); }); }; }
   K.f1 = formulas(F1); K.f2 = formulas(F2); K.f3 = formulas(F3);
   var KINDS = ["incline", "atwood", "projectile", "pendulum", "spring", "circuit", "lens", "dipole", "magnetic", "pv", "wave", "bohr", "kepler", "wheel", "rc", "prism", "youngs", "solenoid", "photo", "vt", "f1", "f2", "f3"];
@@ -952,7 +976,7 @@ var Planner = (function () {
 <script>
 /* Simple planner: inputs -> plan. Engine part is pure (no DOM). Uses PLANNER_DATA and Planner.weightage/expAcc. */
 var Simple = (function () {
-  var U = 0.25, STUDY_SHARE = 0.8;
+  var U = 0.5, STUDY_SHARE = 0.8;
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function r2(x) { return Math.round(x * 100) / 100; }
   function up(h) { return Math.ceil(h / U - 1e-9) * U; }
@@ -977,7 +1001,7 @@ var Simple = (function () {
       var eff = clamp(lv, 1, 10), share = c.noData ? 0.5 * avgShare : W[c.id].share;
       var gap = Math.max(0.08, (0.8 - Planner.expAcc(eff)) / 0.8);
       var full = hoursFor(c, eff);
-      return { c: c, id: c.id, eff: eff, full: full, share: share, pct: c.noData ? null : W[c.id].sharePct, value: share * gap * 100, h: full, mode: "full", down: 0 };
+      return { c: c, id: c.id, eff: eff, full: full, share: share, pct: c.noData ? null : W[c.id].sharePct, mk: c.noData ? null : r2(W[c.id].avgQ * 4), value: share * gap * 100, h: full, mode: "full", down: 0 };
     });
     var byId = {}; items.forEach(function (it) { byId[it.id] = it; });
     var sumFull = items.reduce(function (s, it) { return s + it.full; }, 0);
@@ -1090,7 +1114,7 @@ var Simple = (function () {
       it.action = action(it.eff) + (it.mode === "key" ? " · key topics only" : it.mode === "short" ? " · shortened" : it.mode === "ext" ? " · extended practice" : "");
       it.focus = it.mode === "key" ? it.c.sub.slice(0, 2) : [];
       var why = [], rk = rankSorted.indexOf(it.id) + 1;
-      why.push(it.c.noData ? "Foundation topic; its questions are counted inside Kinematics and Current Electricity" : "Marks: #" + rk + " of " + rankSorted.length + " chapters, about " + it.pct + "% of the paper");
+      why.push(it.c.noData ? "Foundation topic; its questions are counted inside Kinematics and Current Electricity" : "Marks: #" + rk + " of " + rankSorted.length + " chapters, about " + fh2(Math.round(it.mk * 10) / 10) + " marks per paper");
       why.push("you rated " + it.eff + "/10, so " + fh2(it.h) + " h");
       var pre = D.edges.filter(function (e) { return e[2] === "E" && e[1] === it.id && sel[e[0]]; }).map(function (e) { return byId[e[0]].c.name; });
       if (pre.length) why.push("after " + pre.join(" and ") + ", which it needs");
@@ -1129,7 +1153,7 @@ var Simple = (function () {
   function save(keepTs) { if (resetting) return; if (!keepTs) S.savedAt = Date.now(); try { window.localStorage.setItem(KEY, JSON.stringify(S)); saveOk = true; } catch (e) { saveOk = false; } var el = document.getElementById("saved"); if (el) el.textContent = saveOk ? "Your entries are saved automatically on this device and browser." : "This browser is blocking storage (private mode?), so entries cannot be saved."; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  function fd(d) { return d.getDate() + " " + MON[d.getMonth()]; }
+  function fd(d) { return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); }
   function fh(h) { return (Math.round(h * 100) / 100).toString().replace(/\.0+$/, ""); }
 
   var chapterInputs = D.chapters.map(function (c) { return '<label class="ci"><span>' + esc(c.name) + '</span><input type="number" min="0" max="10" step="1" inputmode="numeric" data-ch="' + c.id + '" value="' + (S.over[c.id] != null ? S.over[c.id] : 7) + '"></label>'; }).join("");
@@ -1157,8 +1181,8 @@ var Simple = (function () {
     '<label class="mode"><input type="radio" name="mode" value="all"><span><b>Fit everything</b><i>Keeps every chapter and shortens each one. Drops chapters only if even that cannot fit.</i></span></label>' +
     '</div>' +
     '<p class="muted small">If you have more time than the chapters need, the planner always fits everything, whichever type you choose.</p>' +
-    '<section class="cal"><div class="row sp"><h2>Your calendar</h2><button type="button" class="btn alt" id="calreset">Clear my edits</button></div><p class="muted small">Each date shows the hours you can give Physics. Change any date for exams, pre-boards or travel, and add a short note such as "Pre-board". Dates you changed are outlined.</p><div id="calbox" class="calwrap"></div><p id="caltot" class="muted small" aria-live="polite"></p></section>' +
-    '<section class="prep"><div class="row sp"><h2>Your preparation, chapter by chapter</h2><label class="all">Set all to <input id="all" type="number" min="0" max="10" step="1" inputmode="numeric" value="7"></label></div><p class="muted small">0 = not started, 10 = exam ready. Default is 7.</p><div class="cgrid">' + chapterInputs + '</div></section>' +
+    '<details class="cal sub" open><summary><h2>Your calendar</h2></summary><div class="row"><button type="button" class="btn alt" id="calreset">Clear my edits</button></div><p class="muted small">Each date shows the hours you can give Physics. Change any date for exams, pre-boards or travel, and add a short note such as "Pre-board". Dates you changed are outlined.</p><div id="calbox" class="calwrap"></div><p id="caltot" class="muted small" aria-live="polite"></p></details>' +
+    '<details class="prep sub" open><summary><h2>Your preparation, chapter by chapter</h2></summary><div class="row"><label class="all">Set all to <input id="all" type="number" min="0" max="10" step="1" inputmode="numeric" value="7"></label></div><p class="muted small">0 = not started, 10 = exam ready. Default is 7.</p><div class="cgrid">' + chapterInputs + '</div></details>' +
     '<div class="row"><button class="btn" type="submit">Make my plan</button><span id="err" class="err" role="alert"></span></div>' +
     '</form></details>' + intro + '<div id="out"></div>' +
     '<div class="wipe"><p id="saved" class="small faint"></p><button type="button" class="wipebtn" id="wipe">Delete all my data from this device</button></div>' +
@@ -1244,7 +1268,7 @@ var Simple = (function () {
     var days = totalDays($("start").value), buffer = parseInt($("buffer").value, 10), hw = parseFloat($("hw").value), hs = parseFloat($("hs").value), start = $("start").value, level = 7, err = $("err");
     collect();
     if (!start) { err.textContent = "Choose a start date."; $("start").focus(); return; }
-    if (days < MINDAYS) { err.textContent = "Start on or before " + fd(addD(pD(END), -(MINDAYS - 1))) + " 2027 so the plan has at least " + MINDAYS + " days before JEE Main (20 Jan 2027)."; $("start").focus(); return; }
+    if (days < MINDAYS) { err.textContent = "Start on or before " + fd(addD(pD(END), -(MINDAYS - 1))) + " so the plan has at least " + MINDAYS + " days before JEE Main (20/01/2027)."; $("start").focus(); return; }
     if (!(hw >= 0 && hw <= 16)) { err.textContent = "Weekday hours must be between 0 and 16."; $("hw").focus(); return; }
     if (!(hs >= 0 && hs <= 16)) { err.textContent = "Sunday hours must be between 0 and 16."; $("hs").focus(); return; }
     if (dayHoursArr(start, days, S.dayH, hw, hs).reduce(function (a, b) { return a + b; }, 0) < 5) { err.textContent = "Your calendar has less than 5 hours of Physics time in total. Add more hours."; return; }
@@ -1300,11 +1324,16 @@ var Simple = (function () {
   function addD(d, n) { var x = new Date(d.getTime()); x.setDate(x.getDate() + n); return x; }
   function totalDays(start) { return start ? dayDiff(pD(END), pD(start)) + 1 : 60; }
   function cdLine(start) {
-    var toExam = dayDiff(pD(EXAM), pD(todayISO())), s = "JEE Main: 20 Jan 2027. ";
-    if (start) { var n = dayDiff(pD(EXAM), pD(start)); s += n > 0 ? n + " days from your start date to JEE; the plan runs " + n + " days and ends on 19 Jan 2027. " : "Your start date is after JEE Main. "; }
-    s += toExam > 0 ? (toExam === 1 ? "Tomorrow is JEE Main." : toExam + " days to go from today.") : toExam === 0 ? "JEE Main is today." : "JEE Main 2027 has passed.";
+    var s = "JEE Main: 20/01/2027. ";
+    if (start) { var n = dayDiff(pD(EXAM), pD(start)); s += n > 0 ? "The plan runs " + n + " days from your start date and ends on 19/01/2027." : "Your start date is after JEE Main."; }
     return s;
   }
+  function daysToJEE() { return dayDiff(pD(EXAM), pD(todayISO())); }
+  function paintHead() {
+    var n = daysToJEE(), h = document.querySelector(".brand h1"); if (!h) return;
+    h.innerHTML = n > 0 ? 'JEE Main 2027: Physics Plan to 99 Percentile in <span class="ring" title="Days left until JEE Main on 20/01/2027">' + n + '</span> day' + (n === 1 ? '' : 's') : 'JEE Main 2027: Physics Plan to 99 Percentile';
+  }
+  paintHead();
   var rpMsg = "";
   function todayISO() { var n = new Date(); return n.getFullYear() + "-" + ("0" + (n.getMonth() + 1)).slice(-2) + "-" + ("0" + n.getDate()).slice(-2); }
   function pD(s) { var q = String(s).split("-"); return new Date(+q[0], +q[1] - 1, +q[2]); }
@@ -1330,7 +1359,7 @@ var Simple = (function () {
     var off = dayDiff(pD(todayISO()), pD(S.start));
     if (off <= 0) { rpMsg = "Your plan has not started yet, so there is nothing to re-plan."; view(); return; }
     var total = totalDays(S.start);
-    if (off >= total) { rpMsg = "Your plan period is over. JEE Main is on 20 Jan 2027."; view(); return; }
+    if (off >= total) { rpMsg = "Your plan period is over. JEE Main is on 20/01/2027."; view(); return; }
     var cp = curPlan(), base = S.rp ? S.rp.hist : [], all = base.concat(rowsOf(cp, base.length));
     var hist = all.filter(function (r) { return r.n <= off; });
     var ex = [], nd = 0, ns = 0;
@@ -1351,7 +1380,6 @@ var Simple = (function () {
   function render(p) {
     var h = '<section class="stack" aria-live="polite">';
     var rp = S.rp, off = rp ? rp.hist.length : 0;
-    h += '<div class="note ok" id="cdn"><b>' + esc(cdLine(S.start)) + '</b></div>';
     h += '<div class="rpbar glass"><p><b>Falling behind?</b> Tick Done on what you have finished, then re-plan. Everything you have not finished is re-packed into the days left, and the plan still ends on ' + fd(rp ? p.end : p.end) + '. Chapters you marked Skipped are scheduled again, by marks at stake and prerequisites.</p><div class="acts"><button type="button" class="btn" data-rp="go">Re-plan from today</button>' + (rp ? '<button type="button" class="btn alt" data-rp="undo">Back to original plan</button>' : '') + '</div>' + (rpMsg ? '<p id="rpmsg" class="rpmsg" role="status">' + esc(rpMsg) + '</p>' : '') + '</div>';
     if (!p.order.length) h += '<div class="note ok">Nothing left to plan: every chapter is done. Use the days for practice papers.</div>';
     h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days · ' + fh(p.totalH) + ' h of Physics time in total. On each day about 80% goes to chapter study and 20% to recall and tests.</p>';
@@ -1361,22 +1389,17 @@ var Simple = (function () {
     var ext = p.order.some(function (it) { return it.mode === "ext"; });
     if (ext) { var lastD = Math.max.apply(null, p.order.map(function (it) { return it.d2; })), left = p.days - lastD; h += '<div class="note ok">Time is ample, so every chapter is extended with extra practice (this applies whichever plan type you chose). ' + (left > 0 ? 'The last ' + left + ' day' + (left > 1 ? 's are' : ' is') + ' kept for tests and buffer.' : 'Tests and buffer fit inside the daily recall time.') + '</div>'; }
     else if (p.allFit && p.spareH >= 1) h += '<div class="note ok">Everything fits with about ' + fh(p.spareH) + ' h to spare. Use it for extra practice papers.</div>';
-    h += '<div class="seq glass"><div class="r hd"><span>#</span><span>Chapter</span><span>Status</span><span>Dates</span><span>Hours</span><span>Weightage</span><span>Questions asked ' + D.meta.years[0] + '–' + String(D.meta.years[D.meta.years.length - 1]).slice(2) + '</span><span>What to do</span></div>';
+    h += '<details class="glass fold seqd" open><summary>Chapter-by-chapter plan</summary><div class="seq"><div class="r hd"><span>#</span><span>Chapter</span><span>Status</span><span>Dates</span><span>Hours</span><span>Avg marks per paper</span><span>Questions asked ' + D.meta.years[0] + '–' + String(D.meta.years[D.meta.years.length - 1]).slice(2) + '</span><span>What to do</span></div>';
     p.order.forEach(function (it, i) {
       var q = it.c.noData ? "in Kinematics / Current" : it.c.w.join(" · ");
-      h += '<div class="r"><span class="n">' + (i + 1) + '</span><span class="nm">' + esc(it.c.name) + (it.focus.length ? '<small>Focus: ' + esc(it.focus.join(", ")) + '</small>' : '') + '<small class="why">Why here: ' + esc(it.why.join("; ")) + '.</small>' + '</span>' + stat(it.c) + '<span class="num dt">' + (it.d1 === it.d2 ? fd(it.date1) : fd(it.date1) + ' → ' + fd(it.date2)) + '</span><span class="num">' + fh(it.h) + ' h</span><span class="num">' + (it.pct === null ? '–' : it.pct + '%') + '</span><span class="num q">' + q + '</span><span class="act">' + esc(it.action) + '</span></div>';
-    });
-    h += '</div>';
-    h += '<details class="glass days" open><summary>Day-by-day schedule (' + (off + p.days) + ' days' + (rp ? ', earlier days shown faded' : '') + ')</summary><div class="dl">';
-    (rp ? rp.hist : []).concat(rowsOf(p, off)).forEach(function (r) {
-      h += '<div class="dr' + (r.n <= off ? ' past' : '') + '"><span class="d">Day ' + r.n + '<small>' + WD[pD(r.d).getDay()] + ' ' + fd(pD(r.d)) + '</small>' + (r.t ? '<small class="tag">' + r.t + '</small>' : '') + '</span><span class="m">' + r.m + '</span><span class="rc">' + r.r + '</span></div>';
+      h += '<div class="r"><span class="n">' + (i + 1) + '</span><span class="nm">' + esc(it.c.name) + (it.focus.length ? '<small>Focus: ' + esc(it.focus.join(", ")) + '</small>' : '') + '<small class="why">Why here: ' + esc(it.why.join("; ")) + '.</small>' + '</span>' + stat(it.c) + '<span class="num dt">' + (it.d1 === it.d2 ? fd(it.date1) : fd(it.date1) + ' – ' + fd(it.date2)) + '</span><span class="num">' + fh(it.h) + ' h</span><span class="num">' + (it.mk === null ? '–' : fh(Math.round(it.mk * 10) / 10)) + '</span><span class="num q">' + q + '</span><span class="act">' + esc(it.action) + '</span></div>';
     });
     h += '</div></details>';
     if (rp && rp.ex.length) {
       var nm = function (id) { var c = D.chapters.filter(function (x) { return x.id === id; })[0]; return c ? esc(c.name) : esc(id); };
       h += '<details class="glass skp" open><summary>Already done (' + rp.ex.length + ')</summary><p class="small muted">These were marked Done when you re-planned, so they are not scheduled again.</p><div class="chips">' + rp.ex.map(function (id) { return '<span class="chip">✓ ' + nm(id) + '</span>'; }).join('') + '</div></details>';
     }
-    if (p.skipped.length) h += '<details class="glass skp" open><summary>Skipped chapters (' + p.skipped.length + ')</summary><p class="small muted">Highest value first. Take these up first if you find extra time.</p><div class="chips">' + p.skipped.map(function (it) { return '<span class="chip">' + esc(it.c.name) + (it.pct === null ? '' : ' · ' + it.pct + '%') + '</span>'; }).join("") + '</div></details>';
+    if (p.skipped.length) h += '<details class="glass skp" open><summary>Skipped chapters (' + p.skipped.length + ')</summary><p class="small muted">Highest value first. Take these up first if you find extra time.</p><div class="chips">' + p.skipped.map(function (it) { return '<span class="chip">' + esc(it.c.name) + (it.mk === null ? '' : ' · ' + fh(Math.round(it.mk * 10) / 10) + ' marks') + '</span>'; }).join("") + '</div></details>';
     h += '<div class="dlbar"><button type="button" class="btn" data-dl="pdf">Download as PDF</button><button type="button" class="btn alt" data-dl="html">Download as HTML</button><p>PDF: choose "Save as PDF" in the print window. HTML: a copy of this page with your plan inside; it keeps working offline and remembers your Done / In progress ticks.</p></div>';
     h += '</section>';
     $("out").innerHTML = h;
