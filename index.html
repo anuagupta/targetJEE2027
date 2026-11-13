@@ -1334,12 +1334,12 @@ var Simple = (function () {
     var cp = curPlan(), base = S.rp ? S.rp.hist : [], all = base.concat(rowsOf(cp, base.length));
     var hist = all.filter(function (r) { return r.n <= off; });
     var ex = [], nd = 0, ns = 0;
-    D.chapters.forEach(function (c) { var s = S.status[c.id]; if (s === "done") { ex.push(c.id); nd++; } else if (s === "skipped") { ex.push(c.id); ns++; } });
+    D.chapters.forEach(function (c) { var s = S.status[c.id]; if (s === "done") { ex.push(c.id); nd++; } else if (s === "skipped") { ns++; } });
     S.rp = { from: todayISO(), rem: total - off, hist: hist, ex: ex, hours: S.hW, dh: dayHoursArr(todayISO(), total - off, S.dayH, S.hW, S.hS), dn: JSON.parse(JSON.stringify(S.dayN)), buffer: S.buffer, mode: S.mode, over: JSON.parse(JSON.stringify(S.over)), done: nd, left: ns };
     save();
     view();
     var p = curPlan();
-    rpMsg = "Re-planned from today. " + nd + " done, " + ns + " left out, " + p.order.length + " chapters re-packed into the " + (total - off) + " days left; the plan still ends on " + fd(p.end) + ".";
+    rpMsg = "Re-planned from today. " + nd + " done" + (ns ? ", " + ns + " skipped chapter" + (ns > 1 ? "s" : "") + " brought back in" : "") + ". " + p.order.length + " chapters re-packed into the " + (total - off) + " days left; the plan still ends on " + fd(p.end) + ".";
     view();
     var el = document.getElementById("rpmsg"); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }
@@ -1352,8 +1352,8 @@ var Simple = (function () {
     var h = '<section class="stack" aria-live="polite">';
     var rp = S.rp, off = rp ? rp.hist.length : 0;
     h += '<div class="note ok" id="cdn"><b>' + esc(cdLine(S.start)) + '</b></div>';
-    h += '<div class="rpbar glass"><p><b>Falling behind?</b> Tick Done on what you have finished, then re-plan. Everything you have not finished is re-packed into the days left, and the plan still ends on ' + fd(rp ? p.end : p.end) + '. Chapters you marked Skipped stay out.</p><div class="acts"><button type="button" class="btn" data-rp="go">Re-plan from today</button>' + (rp ? '<button type="button" class="btn alt" data-rp="undo">Back to original plan</button>' : '') + '</div>' + (rpMsg ? '<p id="rpmsg" class="rpmsg" role="status">' + esc(rpMsg) + '</p>' : '') + '</div>';
-    if (!p.order.length) h += '<div class="note ok">Nothing left to plan: every chapter is either done or left out. Use the days for practice papers.</div>';
+    h += '<div class="rpbar glass"><p><b>Falling behind?</b> Tick Done on what you have finished, then re-plan. Everything you have not finished is re-packed into the days left, and the plan still ends on ' + fd(rp ? p.end : p.end) + '. Chapters you marked Skipped are scheduled again, by marks at stake and prerequisites.</p><div class="acts"><button type="button" class="btn" data-rp="go">Re-plan from today</button>' + (rp ? '<button type="button" class="btn alt" data-rp="undo">Back to original plan</button>' : '') + '</div>' + (rpMsg ? '<p id="rpmsg" class="rpmsg" role="status">' + esc(rpMsg) + '</p>' : '') + '</div>';
+    if (!p.order.length) h += '<div class="note ok">Nothing left to plan: every chapter is done. Use the days for practice papers.</div>';
     h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days · ' + fh(p.totalH) + ' h of Physics time in total. On each day about 80% goes to chapter study and 20% to recall and tests.</p>';
     if (p.skipped.length) h += '<div class="warn" role="alert"><b>Not enough time for everything.</b> The ' + p.skipped.length + ' lowest-priority chapter' + (p.skipped.length > 1 ? 's are' : ' is') + ' skipped (listed below). Add days or hours to bring ' + (p.skipped.length > 1 ? 'them' : 'it') + ' back.</div>';
     if (p.keyOnly) h += '<div class="note">' + p.keyOnly + ' chapter' + (p.keyOnly > 1 ? 's are' : ' is') + ' covered by key topics only, to save time.</div>';
@@ -1373,9 +1373,8 @@ var Simple = (function () {
     });
     h += '</div></details>';
     if (rp && rp.ex.length) {
-      var dn2 = rp.ex.filter(function (id) { return S.status[id] === "done"; }), sk2 = rp.ex.filter(function (id) { return S.status[id] !== "done"; });
       var nm = function (id) { var c = D.chapters.filter(function (x) { return x.id === id; })[0]; return c ? esc(c.name) : esc(id); };
-      h += '<details class="glass skp" open><summary>Not in the re-plan (' + rp.ex.length + ')</summary>' + (dn2.length ? '<p class="small muted">Done:</p><div class="chips">' + dn2.map(function (id) { return '<span class="chip">✓ ' + nm(id) + '</span>'; }).join('') + '</div>' : '') + (sk2.length ? '<p class="small muted">Left out (marked Skipped). Untick Skipped and re-plan to bring one back:</p><div class="chips">' + sk2.map(function (id) { return '<span class="chip">' + nm(id) + '</span>'; }).join('') + '</div>' : '') + '</details>';
+      h += '<details class="glass skp" open><summary>Already done (' + rp.ex.length + ')</summary><p class="small muted">These were marked Done when you re-planned, so they are not scheduled again.</p><div class="chips">' + rp.ex.map(function (id) { return '<span class="chip">✓ ' + nm(id) + '</span>'; }).join('') + '</div></details>';
     }
     if (p.skipped.length) h += '<details class="glass skp" open><summary>Skipped chapters (' + p.skipped.length + ')</summary><p class="small muted">Highest value first. Take these up first if you find extra time.</p><div class="chips">' + p.skipped.map(function (it) { return '<span class="chip">' + esc(it.c.name) + (it.pct === null ? '' : ' · ' + it.pct + '%') + '</span>'; }).join("") + '</div></details>';
     h += '<div class="dlbar"><button type="button" class="btn" data-dl="pdf">Download as PDF</button><button type="button" class="btn alt" data-dl="html">Download as HTML</button><p>PDF: choose "Save as PDF" in the print window. HTML: a copy of this page with your plan inside; it keeps working offline and remembers your Done / In progress ticks.</p></div>';
