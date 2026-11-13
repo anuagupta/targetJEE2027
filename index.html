@@ -1389,6 +1389,12 @@ var Simple = (function () {
     var ext = p.order.some(function (it) { return it.mode === "ext"; });
     if (ext) { var lastD = Math.max.apply(null, p.order.map(function (it) { return it.d2; })), left = p.days - lastD; h += '<div class="note ok">Time is ample, so every chapter is extended with extra practice (this applies whichever plan type you chose). ' + (left > 0 ? 'The last ' + left + ' day' + (left > 1 ? 's are' : ' is') + ' kept for tests and buffer.' : 'Tests and buffer fit inside the daily recall time.') + '</div>'; }
     else if (p.allFit && p.spareH >= 1) h += '<div class="note ok">Everything fits with about ' + fh(p.spareH) + ' h to spare. Use it for extra practice papers.</div>';
+    h += '<details class="glass fold how study" open><summary>How to study every chapter</summary><div class="fold-in"><ol>' +
+      '<li><b>Blank-paper recall.</b> Take a blank sheet and write every formula, derivation and principle you remember from the chapter. Then check it against your notes and mark what you missed or got wrong.</li>' +
+      '<li><b>Questions you could already solve.</b> Do not re-solve them. Just look at each one and check that you still remember the approach.</li>' +
+      '<li><b>Questions you could not solve earlier.</b> Solve them on your own. If you get stuck, read that part of your notes thoroughly, then try again.</li>' +
+      '<li><b>If time permits: previous year questions.</b> Solve the last 2 to 3 years of JEE Main questions on this chapter.</li>' +
+      '</ol></div></details>';
     h += '<details class="glass fold seqd" open><summary>Chapter-by-chapter plan</summary><div class="seq"><div class="r hd"><span>#</span><span>Chapter</span><span>Status</span><span>Dates</span><span>Hours</span><span>Avg marks per paper</span><span>Questions asked ' + D.meta.years[0] + '–' + String(D.meta.years[D.meta.years.length - 1]).slice(2) + '</span><span>What to do</span></div>';
     p.order.forEach(function (it, i) {
       var q = it.c.noData ? "in Kinematics / Current" : it.c.w.join(" · ");
