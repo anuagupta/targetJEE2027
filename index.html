@@ -444,7 +444,7 @@ var PLANNER_DATA = {
       "2026 column: tagged by an AI from the esaral.com PDFs of the 19 Physics-bearing shifts (Jan 21, 22, 23, 24, 28 and Apr 2, 4, 5, 6, 8-S2; Apr 8 S1 not available), 25 questions each. Vectors and circular motion are merged into Kinematics for 2026. Audit the per-shift CSV before relying on it.",
       "The source's yearly totals are 2022: 626, 2023: 688, 2024: 555, 2025: 456 (including Communication Systems in 2022-23). Class-wise totals elsewhere give about 600 for 2024 and 475 for 2025, so the source undercounts by roughly 4-8%.",
       "The source has no rows for 1-D kinematics, vectors or circular motion, so shares for listed chapters are somewhat overstated.",
-      "Counts are per year over all shifts, not per paper. The planner normalises each year to a 30-question paper."
+      "Counts are per year over all shifts, not per paper. The planner normalises each year to the current 25-question subject paper (100 marks)."
     ]
   },
   clusters: [
@@ -524,7 +524,7 @@ var Planner = (function () {
   var TARGET_ACC = 0.80;           // realistic JEE Main-level accuracy after focused work
   var EDGE_W = { E: 1.0, H: 0.5, O: 0.15 };
   var SPLIT = { study: 0.72, recall: 0.16 };  // remaining share of each day is buffer
-  var PAPER_Q = 30;
+  var PAPER_Q = 25;   // JEE Main has 25 questions per subject (20 MCQ + 5 numerical, all compulsory) = 100 marks
 
   function clamp(x, a, b) { return Math.max(a, Math.min(b, x)); }
   function r2(x) { return Math.round(x * 100) / 100; }
@@ -540,7 +540,7 @@ var Planner = (function () {
     var recency = [0.1, 0.15, 0.2, 0.25, 0.3];
     var out = {}, maxShare = 0;
     chs.forEach(function (c) {
-      var perYear = c.w.map(function (v, i) { return v / ytot[i] * PAPER_Q; });   // normalised to a 30-question paper
+      var perYear = c.w.map(function (v, i) { return v / ytot[i] * PAPER_Q; });   // normalised to a 25-question subject paper
       var avgQ = perYear.reduce(function (s, v) { return s + v; }, 0) / n;
       var wq = perYear.reduce(function (s, v, i) { return s + v * recency[i]; }, 0);
       var share = wq / PAPER_Q;
@@ -1159,7 +1159,7 @@ var Simple = (function () {
   var chapterInputs = D.chapters.map(function (c) { return '<label class="ci"><span>' + esc(c.name) + '</span><input type="number" min="0" max="10" step="1" inputmode="numeric" data-ch="' + c.id + '" value="' + (S.over[c.id] != null ? S.over[c.id] : 7) + '"></label>'; }).join("");
 
   var intro = '<details class="glass fold how" id="howd"><summary>How Your Plan Is Made</summary><div class="fold-in"><p class="muted">Nothing here is a guess dressed up as a fact. These are the seven things the planner weighs, in this order.</p><ol>' +
-    '<li><b>Marks at stake.</b> How much of the 30-question paper each chapter has carried across JEE Main 2022 to 2026. Every year is scaled to the same paper size so a year with more shifts does not dominate, and recent years count more (2026 the most).</li>' +
+    '<li><b>Marks at stake.</b> How much of the 25-question Physics paper (100 marks) each chapter has carried across JEE Main 2022 to 2026. Every year is scaled to the same paper size so a year with more shifts does not dominate, and recent years count more (2026 the most).</li>' +
     '<li><b>Your preparation.</b> The 0 to 10 you give each chapter. Low means learn from scratch, middle means revise and practise, high means a quick test. A chapter you already know well gets little time.</li>' +
     '<li><b>Time the chapter really needs.</b> Each chapter has a base time for learning it fresh and for revising it. Your rating moves it between the two.</li>' +
     '<li><b>Marks still to win per hour.</b> Marks at stake multiplied by how far you are from a solid score. This is what decides what to keep when time is short.</li>' +
