@@ -370,13 +370,177 @@ html,body{background:#fff!important}
     F3 = ["∮ E·dA = q / ε₀", "F = qvB sinθ", "ε = −dΦ/dt", "KE = hν − φ", "λ = h / p", "1/v − 1/u = 1/f"];
   function formulas(list) { return function (c) { list.forEach(function (s, i) { T(c, s, 14 + (i % 2) * 124, 40 + Math.floor(i / 2) * 52, 24); }); }; }
   K.f1 = formulas(F1); K.f2 = formulas(F2); K.f3 = formulas(F3);
-  var KINDS = ["incline", "atwood", "projectile", "pendulum", "spring", "circuit", "lens", "dipole", "magnetic", "pv", "wave", "bohr", "kepler", "wheel", "rc", "prism", "youngs", "solenoid", "photo", "vt", "f1", "f2", "f3"];
+  /* ---------- Maths diagrams ---------- */
+  function tr(p, q, g) { var d = Math.hypot(q[0] - p[0], q[1] - p[1]) || 1; return [p[0] + (q[0] - p[0]) * g / d, p[1] + (q[1] - p[1]) * g / d]; }
+  K.parabola = function (c, t) {
+    var ox = 90, oy = 95, a = 20, yy = reduce ? 45 : 62 * Math.sin(t * .7);
+    A(c, 20, oy, 240, oy, 6); A(c, ox, 182, ox, 10, 6); T(c, "x", 232, oy + 17, 15); T(c, "y", ox + 8, 22, 15);
+    c.beginPath(); for (var i = -78; i <= 78; i += 3) { var x = ox + i * i / (4 * a), y = oy - i; if (i === -78) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
+    D(c, 1); L(c, ox - a, 14, ox - a, 180); D(c, 0);
+    var px = ox + yy * yy / (4 * a), py = oy - yy; C(c, ox + a, oy, 2.5, 1); T(c, "F", ox + a - 3, oy + 16, 15); T(c, "directrix", ox - a - 62, 172, 14);
+    D(c, 1); L(c, px, py, ox - a, py); D(c, 0); L(c, px, py, ox + a, oy); C(c, px, py, 3.5, 1);
+    T(c, "PF = PM", 150, 40, 17); T(c, "y² = 4ax", 168, 160, 18);
+  };
+  K.sincos = function (c, t) {
+    var x0 = 30, w = 200, y0 = 95, am = 50;
+    A(c, 16, y0, 246, y0, 6); A(c, x0, 172, x0, 12, 6);
+    c.beginPath(); for (var u = 0; u <= w; u += 3) { var y = y0 - am * Math.sin(u / w * TAU); if (u) c.lineTo(x0 + u, y); else c.moveTo(x0 + u, y); } c.stroke();
+    D(c, 1); c.beginPath(); for (var v = 0; v <= w; v += 3) { var y2 = y0 - am * Math.cos(v / w * TAU); if (v) c.lineTo(x0 + v, y2); else c.moveTo(x0 + v, y2); } c.stroke(); D(c, 0);
+    T(c, "π", x0 + w / 2 - 4, y0 + 17, 15); T(c, "2π", x0 + w - 6, y0 + 17, 15);
+    var uu = reduce ? .3 * w : ((t * .12) % 1) * w; C(c, x0 + uu, y0 - am * Math.sin(uu / w * TAU), 3.5, 1);
+    T(c, "sin x", 62, 34, 17); T(c, "cos x (dashed)", 118, 176, 15);
+  };
+  K.unitcircle = function (c, t) {
+    var cx = 100, cy = 100, r = 62, th = reduce ? .9 : (t * .5) % TAU, px = cx + r * Math.cos(th), py = cy - r * Math.sin(th);
+    A(c, 20, cy, 180, cy, 6); A(c, cx, 176, cx, 14, 6); C(c, cx, cy, r);
+    L(c, cx, cy, px, py); D(c, 1); L(c, px, py, px, cy); D(c, 0); L(c, cx, cy, px, cy);
+    c.beginPath(); c.arc(cx, cy, 18, 0, -th, true); c.stroke(); C(c, px, py, 3.5, 1);
+    T(c, "θ", cx + 22, cy - 6, 15); T(c, "cos θ", (cx + px) / 2 - 14, cy + 17, 14); T(c, "sin θ", px + 7, (cy + py) / 2 + 4, 14);
+    T(c, "sin²θ + cos²θ = 1", 140, 28, 16);
+  };
+  K.integral = function (c, t) {
+    var x0 = 36, y0 = 160, a = 70, b = 210, n = reduce ? 8 : 4 + Math.floor((t * .8) % 8);
+    function h(x) { var u = (x - x0) / 190; return 24 + 100 * u * (1 - .4 * u); }
+    A(c, 20, y0, 246, y0, 6); A(c, x0, 176, x0, 12, 6);
+    var dx = (b - a) / n; for (var i = 0; i < n; i++) { var xx = a + i * dx, hh = h(xx); c.beginPath(); c.rect(xx, y0 - hh, dx, hh); c.stroke(); }
+    c.beginPath(); for (var x = x0; x <= 236; x += 3) { var y = y0 - h(x); if (x === x0) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
+    T(c, "a", a - 3, y0 + 16, 15); T(c, "b", b - 3, y0 + 16, 15); T(c, "∫ f(x) dx = lim Σ f(xᵢ) Δx", 40, 26, 16);
+  };
+  K.tangent = function (c, t) {
+    var x0 = 30, w = 200, y0 = 100, am = 45, k = TAU / w, px = x0 + 20 + (reduce ? .3 : (t * .08) % 1) * (w - 40), py = y0 - am * Math.sin(k * (px - x0)), sl = -am * k * Math.cos(k * (px - x0));
+    A(c, 16, y0, 246, y0, 6); A(c, x0, 176, x0, 12, 6);
+    c.beginPath(); for (var u = 0; u <= w; u += 3) { var y = y0 - am * Math.sin(k * u); if (u) c.lineTo(x0 + u, y); else c.moveTo(x0, y); } c.stroke();
+    L(c, px - 40, py - sl * 40, px + 40, py + sl * 40); C(c, px, py, 3.5, 1);
+    T(c, "slope of tangent = dy/dx", 50, 168, 16); T(c, "y = f(x)", 150, 26, 16);
+  };
+  K.axes3d = function (c0) {
+    var O = [100, 130], lx = 52, ly = 88, lz = 82;
+    function pt(x, y, z) { return [O[0] - x * lx * .62 + y * ly, O[1] + x * lx * .5 - z * lz]; }
+    var a1 = pt(1.45, 0, 0), a2 = pt(0, 1.4, 0), a3 = pt(0, 0, 1.35);
+    A(c0, O[0], O[1], a1[0], a1[1], 6); A(c0, O[0], O[1], a2[0], a2[1], 6); A(c0, O[0], O[1], a3[0], a3[1], 6);
+    T(c0, "x", a1[0] - 14, a1[1] + 4, 17); T(c0, "y", a2[0] - 4, a2[1] + 16, 17); T(c0, "z", a3[0] + 8, a3[1] + 4, 17);
+    var V = []; for (var i = 0; i < 8; i++) V.push(pt(i & 1, (i >> 1) & 1, (i >> 2) & 1));
+    D(c0, 1); [[0, 1], [0, 2], [1, 3], [2, 3], [4, 5], [4, 6], [5, 7], [6, 7], [0, 4], [1, 5], [2, 6], [3, 7]].forEach(function (e) { L(c0, V[e[0]][0], V[e[0]][1], V[e[1]][0], V[e[1]][1]); }); D(c0, 0);
+    A(c0, O[0], O[1], V[7][0] - 3, V[7][1] + 3, 6); C(c0, V[7][0], V[7][1], 3, 1);
+    T(c0, "P(x, y, z)", V[7][0] + 8, V[7][1] - 2, 16); T(c0, "r = xi + yj + zk", 120, 178, 16);
+  };
+  K.ellipse = function (c, t) {
+    var cx = 130, cy = 98, a = 85, b = 52, f = Math.sqrt(a * a - b * b), th = reduce ? 1 : (t * .5) % TAU, px = cx + a * Math.cos(th), py = cy - b * Math.sin(th);
+    A(c, 20, cy, 244, cy, 6); A(c, cx, 176, cx, 14, 6);
+    c.beginPath(); c.ellipse(cx, cy, a, b, 0, 0, TAU); c.stroke();
+    C(c, cx - f, cy, 2.5, 1); C(c, cx + f, cy, 2.5, 1); T(c, "F₁", cx - f - 10, cy + 16, 14); T(c, "F₂", cx + f - 4, cy + 16, 14);
+    L(c, px, py, cx - f, cy); L(c, px, py, cx + f, cy); C(c, px, py, 3.5, 1);
+    T(c, "PF₁ + PF₂ = 2a", 8, 20, 16); T(c, "x²/a² + y²/b² = 1", 112, 180, 16);
+  };
+  K.pascal = function (c) {
+    for (var i = 0; i <= 5; i++) { var v = 1; for (var j = 0; j <= i; j++) { T(c, String(v), 130 + (j - i / 2) * 36, 36 + i * 26, 20, "center"); v = v * (i - j) / (j + 1); } }
+    T(c, "Pascal's triangle: ⁿCᵣ", 130, 184, 16, "center"); T(c, "(a + b)ⁿ", 8, 20, 16);
+  };
+  K.bell = function (c, t) {
+    var y0 = 150, cx = 130, s = 38, hh = 100;
+    function f(x) { return y0 - hh * Math.exp(-.5 * Math.pow((x - cx) / s, 2)); }
+    A(c, 20, y0, 244, y0, 6);
+    c.beginPath(); for (var x = 24; x <= 236; x += 3) { if (x === 24) c.moveTo(x, f(x)); else c.lineTo(x, f(x)); } c.stroke();
+    c.save(); c.globalAlpha *= .45; for (var xx = cx - s; xx <= cx + s; xx += 4) L(c, xx, y0, xx, f(xx)); c.restore();
+    D(c, 1); L(c, cx, y0, cx, 40); D(c, 0);
+    T(c, "μ", cx - 4, y0 + 17, 16); T(c, "μ−σ", cx - s - 14, y0 + 17, 14); T(c, "μ+σ", cx + s - 10, y0 + 17, 14); T(c, "≈ 68%", cx - 20, y0 - 24, 16); T(c, "Normal distribution", 140, 26, 15);
+  };
+  K.complex = function (c, t) {
+    var cx = 100, cy = 95, r = 62, th = reduce ? .8 : .75 + .35 * Math.sin(t * .7), px = cx + r * Math.cos(th), py = cy - r * Math.sin(th), qy = cy + r * Math.sin(th);
+    A(c, 20, cy, 190, cy, 6); A(c, cx, 180, cx, 10, 6); T(c, "Re", 174, cy + 17, 14); T(c, "Im", cx + 6, 20, 14);
+    A(c, cx, cy, px, py, 6); D(c, 1); L(c, cx, cy, px, qy); L(c, px, py, px, qy); D(c, 0);
+    c.beginPath(); c.arc(cx, cy, 22, 0, -th, true); c.stroke(); C(c, px, py, 3, 1); C(c, px, qy, 3, 1);
+    T(c, "z = x + iy", px + 6, py - 6, 15); T(c, "z̄", px + 8, qy + 12, 17); T(c, "θ", cx + 26, cy - 7, 14); T(c, "r", cx - 14, (cy + py) / 2, 14); T(c, "z · z̄ = |z|²", 120, 178, 15);
+  };
+  /* ---------- Chemistry diagrams ---------- */
+  function kek(c, cx, cy, r, alt) {
+    var v = []; for (var i = 0; i < 6; i++) { var a = -Math.PI / 2 + i * Math.PI / 3; v.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]); }
+    c.beginPath(); v.forEach(function (p, i) { if (i) c.lineTo(p[0], p[1]); else c.moveTo(p[0], p[1]); }); c.closePath(); c.stroke();
+    for (var k = 0; k < 6; k++) if (k % 2 === alt) {
+      var p = v[k], q = v[(k + 1) % 6], mx = (p[0] + q[0]) / 2, my = (p[1] + q[1]) / 2, dx = cx - mx, dy = cy - my, dl = Math.hypot(dx, dy), o = 6 / dl, e = .18;
+      L(c, p[0] + dx * o + (q[0] - p[0]) * e, p[1] + dy * o + (q[1] - p[1]) * e, q[0] + dx * o - (q[0] - p[0]) * e, q[1] + dy * o - (q[1] - p[1]) * e);
+    }
+  }
+  K.benzene = function (c) {
+    kek(c, 58, 92, 38, 0); kek(c, 202, 92, 38, 1);
+    A(c, 130, 92, 108, 92, 6); A(c, 130, 92, 152, 92, 6); T(c, "resonance", 130, 70, 13, "center"); T(c, "benzene, C₆H₆", 130, 168, 17, "center");
+  };
+  function wedge(c, p, q, g) { var s = tr(p, q, g), ang = Math.atan2(q[1] - p[1], q[0] - p[0]), nx = -Math.sin(ang) * 5, ny = Math.cos(ang) * 5; c.beginPath(); c.moveTo(s[0], s[1]); c.lineTo(q[0] + nx, q[1] + ny); c.lineTo(q[0] - nx, q[1] - ny); c.closePath(); c.save(); c.fillStyle = INK; c.fill(); c.restore(); c.stroke(); }
+  function dashb(c, p, q, g) { var s = tr(p, q, g), ang = Math.atan2(q[1] - p[1], q[0] - p[0]); for (var i = 1; i <= 6; i++) { var u = i / 6, x = s[0] + (q[0] - s[0]) * u, y = s[1] + (q[1] - s[1]) * u, hw = 1 + u * 5; L(c, x - Math.sin(ang) * hw, y + Math.cos(ang) * hw, x + Math.sin(ang) * hw, y - Math.cos(ang) * hw); } }
+  K.methane = function (c) {
+    var C0 = [115, 98], a = [115, 38], b = [62, 140], w = [172, 134], d = [172, 64];
+    var s1 = tr(C0, a, 10), s2 = tr(C0, b, 10); L(c, s1[0], s1[1], a[0], a[1] + 12); L(c, s2[0], s2[1], b[0] + 6, b[1] - 8);
+    wedge(c, C0, [w[0] - 8, w[1] - 5], 10); dashb(c, C0, [d[0] - 8, d[1] + 5], 10);
+    T(c, "C", C0[0] - 6, C0[1] + 6, 20); T(c, "H", a[0] - 6, a[1] + 6, 18); T(c, "H", b[0] - 14, b[1] + 14, 18); T(c, "H", w[0] - 2, w[1] + 6, 18); T(c, "H", d[0] - 2, d[1] + 2, 18);
+    T(c, "109.5°", 38, 92, 14); T(c, "CH₄ · sp³ · tetrahedral", 130, 184, 15, "center");
+  };
+  K.orbitals = function (c) {
+    C(c, 48, 90, 24, 1); T(c, "s", 44, 146, 18); T(c, "spherical", 18, 166, 13);
+    c.beginPath(); c.ellipse(130, 62, 14, 28, 0, 0, TAU); c.stroke(); c.beginPath(); c.ellipse(130, 118, 14, 28, 0, 0, TAU); c.stroke();
+    D(c, 1); L(c, 108, 90, 152, 90); D(c, 0); T(c, "+", 125, 66, 16); T(c, "−", 125, 126, 16); T(c, "p", 126, 160, 18); T(c, "dumbbell", 100, 178, 13);
+    [[-30, 0, 24, 10], [30, 0, 24, 10], [0, -30, 10, 24], [0, 30, 10, 24]].forEach(function (e, i) { c.beginPath(); c.ellipse(210 + e[0], 90 + e[1], e[2], e[3], 0, 0, TAU); c.stroke(); T(c, i < 2 ? "+" : "−", 206 + e[0], 94 + e[1], 14); });
+    T(c, "d", 206, 160, 18); T(c, "cloverleaf", 180, 178, 13);
+  };
+  K.energy = function (c) {
+    A(c, 30, 172, 30, 10, 6); A(c, 30, 172, 248, 172, 6); T(c, "E", 12, 24, 17); T(c, "reaction coordinate", 138, 188, 14, "center");
+    c.beginPath(); c.moveTo(36, 110); c.lineTo(66, 110); c.bezierCurveTo(96, 110, 102, 40, 132, 40); c.bezierCurveTo(162, 40, 168, 130, 198, 130); c.lineTo(242, 130); c.stroke();
+    D(c, 1); c.beginPath(); c.moveTo(66, 110); c.bezierCurveTo(96, 110, 104, 72, 132, 72); c.bezierCurveTo(160, 72, 168, 130, 198, 130); c.stroke(); L(c, 54, 40, 132, 40); L(c, 200, 110, 224, 110); D(c, 0);
+    A(c, 54, 108, 54, 42, 5); T(c, "Ea", 60, 82, 15); A(c, 224, 110, 224, 128, 5); T(c, "ΔH", 228, 124, 14); T(c, "TS ‡", 118, 32, 14);
+    T(c, "reactants", 36, 128, 13); T(c, "products", 186, 150, 13); T(c, "catalysed", 176, 76, 13);
+  };
+  K.titration = function (c) {
+    A(c, 30, 172, 30, 10, 6); A(c, 30, 172, 246, 172, 6); T(c, "pH", 26, 22, 16, "right"); T(c, "V (NaOH)", 232, 187, 14, "right");
+    c.beginPath(); for (var x = 36; x <= 236; x += 2) { var hs = 1 / (1 + Math.exp(-(x - 120) / 5)), y = 150 - 25 * (1 - Math.exp(-(x - 36) / 45)) - 90 * hs - (x > 120 ? 8 * (x - 120) / 110 : 0); if (x === 36) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
+    D(c, 1); L(c, 30, 84, 120, 84); L(c, 120, 84, 120, 172); D(c, 0); T(c, "pH 7", 38, 78, 14); T(c, "equivalence", 126, 160, 14); T(c, "strong acid + strong base", 60, 24, 14);
+  };
+  K.galvanic = function (c, t) {
+    c.beginPath(); c.rect(26, 104, 76, 66); c.stroke(); c.beginPath(); c.rect(158, 104, 76, 66); c.stroke();
+    L(c, 64, 150, 64, 62); L(c, 196, 150, 196, 62); L(c, 64, 62, 64, 34); L(c, 64, 34, 114, 34); L(c, 146, 34, 196, 34); L(c, 196, 34, 196, 62); C(c, 130, 34, 16); T(c, "V", 125, 40, 16);
+    L(c, 86, 134, 86, 100); L(c, 86, 100, 174, 100); L(c, 174, 100, 174, 134); T(c, "salt bridge", 90, 92, 13);
+    var s = reduce ? .3 : (t * .35) % 1; C(c, 64 + s * 46, 34, 2.5, 1);
+    A(c, 74, 22, 104, 22, 5); T(c, "e⁻", 82, 16, 13);
+    T(c, "Zn", 72, 162, 16); T(c, "Cu", 204, 162, 16); T(c, "anode (−)", 20, 190, 13); T(c, "cathode (+)", 152, 190, 13); T(c, "oxid.", 26, 124, 12); T(c, "red.", 160, 124, 12);
+  };
+  K.octa = function (c) {
+    var M = [130, 94], top = [130, 28], bot = [130, 164], lf = [58, 94], rt = [202, 94], fr = [86, 138], bk = [176, 52];
+    [top, bot, lf, rt].forEach(function (p) { var s = tr(M, p, 10), e = tr(M, p, Math.hypot(p[0] - M[0], p[1] - M[1]) - 12); L(c, s[0], s[1], e[0], e[1]); });
+    wedge(c, M, tr(M, fr, Math.hypot(fr[0] - M[0], fr[1] - M[1]) - 10), 10); dashb(c, M, tr(M, bk, Math.hypot(bk[0] - M[0], bk[1] - M[1]) - 10), 10);
+    T(c, "M", 124, 100, 20); [["L", top, -4, 4], ["L", bot, -4, 16], ["L", lf, -16, 6], ["L", rt, 4, 6], ["L", fr, -16, 12], ["L", bk, 4, 4]].forEach(function (e) { T(c, e[0], e[1][0] + e[2], e[1][1] + e[3], 17); });
+    T(c, "[ML₆]ⁿ⁺ octahedral", 8, 18, 15); T(c, "d²sp³ / sp³d²", 150, 184, 14);
+  };
+  K.periodic = function (c) {
+    var R = [["Li", "Be", "B", "C", "N", "O", "F", "Ne"], ["Na", "Mg", "Al", "Si", "P", "S", "Cl", "Ar"]];
+    R.forEach(function (row, j) { row.forEach(function (s, i) { c.beginPath(); c.rect(10 + i * 25, 44 + j * 30, 25, 30); c.stroke(); T(c, s, 22 + i * 25, 64 + j * 30, 14, "center"); }); });
+    A(c, 14, 118, 206, 118, 6); T(c, "ionisation energy, electronegativity ↑", 110, 138, 14, "center");
+    A(c, 228, 46, 228, 106, 6); T(c, "size ↑", 214, 124, 13); T(c, "Periodic trends", 10, 26, 16);
+  };
+  K.maxboltz = function (c) {
+    A(c, 30, 170, 30, 12, 6); A(c, 30, 170, 246, 170, 6); T(c, "fraction of molecules", 36, 22, 14); T(c, "speed", 226, 186, 14);
+    c.beginPath(); for (var u = 0; u <= 3.5; u += .05) { var x = 30 + u * 60, y = 168 - 275 * u * u * Math.exp(-u * u); if (!u) c.moveTo(x, y); else c.lineTo(x, y); } c.stroke();
+    D(c, 1); c.beginPath(); for (var v = 0; v <= 3.5; v += .05) { var x2 = 30 + v * 60, y2 = 168 - 275 * v * v * Math.exp(-v * v / 2) / 2.828; if (!v) c.moveTo(x2, y2); else c.lineTo(x2, y2); } c.stroke(); D(c, 0);
+    T(c, "T₁", 72, 56, 16); T(c, "T₂ > T₁ (dashed)", 138, 96, 14);
+  };
+  K.sn2 = function (c) {
+    var Cc = [130, 92]; T(c, "C", 124, 98, 20); T(c, "Nu⁻", 14, 98, 17); T(c, "X", 214, 98, 17);
+    D(c, 1); L(c, 48, 92, 114, 92); L(c, 146, 92, 208, 92); D(c, 0); T(c, "δ⁻", 76, 82, 13); T(c, "δ⁻", 172, 82, 13);
+    L(c, 130, 80, 130, 40); T(c, "H", 124, 34, 16); wedge(c, Cc, [100, 134], 12); T(c, "H", 86, 148, 16); dashb(c, Cc, [160, 134], 12); T(c, "H", 160, 148, 16);
+    T(c, "SN2: back-side attack, inversion", 130, 184, 14, "center");
+  };
+  var FM1 = ["x = (−b ± √D) / 2a", "sin²θ + cos²θ = 1", "ⁿCᵣ = n! / r!(n−r)!", "∫ xⁿ dx = xⁿ⁺¹ / (n+1)", "d/dx (sin x) = cos x", "Sₙ = n/2 [2a + (n−1)d]"],
+    FM2 = ["eⁱᶿ = cosθ + i sinθ", "a·b = |a||b| cosθ", "y − y₁ = m(x − x₁)", "P(A|B) = P(A∩B)/P(B)", "x² + y² = r²", "lim sinx/x = 1 (x→0)"],
+    FC1 = ["PV = nRT", "ΔG = ΔH − TΔS", "pH = −log [H⁺]", "E = E° − (0.059/n) log Q", "k = A e^(−Ea/RT)", "t½ = 0.693 / k"],
+    FC2 = ["pH = pKa + log [A⁻]/[HA]", "ΔT = i · K · m", "Kp = Kc (RT)^Δn", "bond order = (Nb − Na)/2", "λ = h / mv", "Ksp = [A⁺]ᵐ[B⁻]ⁿ"];
+  function formulas1(list) { return function (c) { list.forEach(function (s, i) { T(c, s, 12, 34 + i * 30, 20); }); }; }
+  K.fm1 = formulas1(FM1); K.fm2 = formulas1(FM2); K.fc1 = formulas1(FC1); K.fc2 = formulas1(FC2);
+  var KP = ["incline", "atwood", "projectile", "pendulum", "spring", "circuit", "lens", "dipole", "magnetic", "pv", "wave", "bohr", "kepler", "wheel", "rc", "prism", "youngs", "solenoid", "photo", "vt", "f1", "f2", "f3"];
+  var KM = ["parabola", "sincos", "unitcircle", "integral", "tangent", "axes3d", "ellipse", "pascal", "bell", "complex", "fm1", "fm2"],
+    KC = ["benzene", "methane", "orbitals", "energy", "titration", "galvanic", "octa", "periodic", "maxboltz", "sn2", "fc1", "fc2"], KINDS = [KP, KM, KC];
 
   /* ---------- layers ---------- */
   function mk(seed, kinds, cols, rows, TW, TH, scale, alpha, blur, vx, vy, live) {
-    var r = rng(seed), list = kinds.slice().sort(function () { return r() - .5; }), items = [], cw = TW / cols, ch = TH / rows, n = 0;
+    var r = rng(seed), lists = kinds.map(function (k) { return k.slice().sort(function () { return r() - .5; }); }), items = [], cw = TW / cols, ch = TH / rows, n = 0;
     for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) {
-      var kd = list[n++ % list.length], bw = BW * scale, bh = BH * scale;
+      var ls = lists[n % lists.length], kd = ls[Math.floor(n / lists.length) % ls.length]; n++; var bw = BW * scale, bh = BH * scale;
       items.push({ k: kd, x: i * cw + (cw - bw) * (.1 + .8 * r()), y: j * ch + (ch - bh) * (.1 + .8 * r()), rot: (r() - .5) * .12, ph: r() * 6, sprite: null });
     }
     return { items: items, TW: TW, TH: TH, s: scale, a: alpha, blur: blur, vx: vx, vy: vy, live: live };
