@@ -54,6 +54,7 @@ input[type=range]{width:100%;accent-color:var(--lav);min-height:32px}
 .btn{background:var(--lav);color:#17142a;border:0;border-radius:999px;padding:12px 26px;font:600 15px var(--f-display);cursor:pointer;min-height:44px}
 .btn:hover{filter:brightness(1.08)}
 .err{color:var(--bad);font-size:14px}
+.tabs{display:flex;justify-content:center;gap:10px;margin:0 0 22px;flex-wrap:wrap}.tab{font:600 15px var(--f-body);color:var(--muted);background:var(--glass);border:1px solid var(--edge);border-radius:999px;padding:10px 26px;min-height:44px;cursor:pointer}.tab:hover{color:var(--ink);background:var(--glass-2)}.tab[aria-selected=true]{color:#15121f;background:var(--lav);border-color:var(--lav)}.tab:focus-visible{outline:2px solid var(--lav);outline-offset:3px}.tabpanel{display:block}.tabpanel[hidden]{display:none}
 .sum{color:var(--muted);font-size:15px}
 .ring{display:inline-block;min-width:1.9em;padding:.02em .3em;border:2.5px solid var(--lav);border-radius:999px;text-align:center;color:var(--ink);background:rgba(190,170,255,.14);box-shadow:0 0 18px rgba(190,170,255,.45);line-height:1.15;margin:0 .1em;white-space:nowrap}
 .warn{border:1px solid rgba(255,211,122,.45);background:rgba(255,211,122,.1);color:var(--warn);border-radius:16px;padding:12px 16px}
@@ -77,7 +78,7 @@ input[type=range]{width:100%;accent-color:var(--lav);min-height:32px}
  .r span:nth-child(6){grid-area:w}.r .q{grid-area:q}.r .q::before{content:"Asked per year ";color:var(--faint)}.r .act{grid-area:act}
  .r span:nth-child(6)::before{content:"Avg marks per paper ";color:var(--faint)}.r .nm small{font-size:12px}
 }
-@media print{.glow,#board,.vig{display:none}body{background:#fff;color:#000}.glass{background:#fff;border-color:#bbb}}
+@media print{.tabs{display:none}.glow,#board,.vig{display:none}body{background:#fff;color:#000}.glass{background:#fff;border-color:#bbb}}
 
 .prep{display:grid;gap:8px}.prep h2{font:600 16px var(--f-display);margin:0}.sp{justify-content:space-between}.all{display:flex;align-items:center;gap:8px;flex-direction:row;font-size:13px}.all input{width:64px;min-height:38px;padding:6px 8px;text-align:center}
 
@@ -170,9 +171,10 @@ html,body{background:#fff!important}
 <canvas id="board" aria-hidden="true"></canvas><div class="vig" aria-hidden="true"></div>
 <div class="glow" aria-hidden="true"><i></i><i></i><i></i></div>
 <div class="wrap">
-<div class="brand"><h1>JEE Main 2027: Physics Plan to 99 Percentile</h1></div>
+<div class="brand"><h1>JEE Main 2027: Plan to 99 Percentile</h1></div>
 
-<main id="app"><noscript>This planner needs JavaScript.</noscript></main>
+<nav class="tabs" role="tablist" aria-label="Subject"><button type="button" role="tab" class="tab" data-tab="physics" aria-selected="true">Physics</button><button type="button" role="tab" class="tab" data-tab="maths" aria-selected="false">Maths</button><button type="button" role="tab" class="tab" data-tab="chemistry" aria-selected="false">Chemistry</button></nav>
+<main id="app"><section class="tabpanel" id="panel-physics" role="tabpanel"><noscript>This planner needs JavaScript.</noscript></section><section class="tabpanel" id="panel-maths" role="tabpanel" hidden></section><section class="tabpanel" id="panel-chemistry" role="tabpanel" hidden></section></main>
 </div>
 <script>
 /* Blackboard background: JEE physics diagrams drawn in white chalk, drifting slowly in three depth layers.
@@ -430,6 +432,10 @@ var PLANNER_DATA = {
     statusLabel: "Estimates: coaching data 2022-25, AI-tagged papers 2026",
     dataNote: "2022-2025 come from a coaching-institute analysis (counts summed over all shifts). 2026 was tagged by an AI, question by question, from the 19 actual Physics papers (475 questions) and has NOT been checked by a human; mis-tags of a few questions per chapter are likely. NTA publishes no official chapter-wise data. Expect roughly 20% error on any single chapter-year. Vectors and Circular Motion are not reported separately by the source, so they carry no weightage of their own.",
     years: [2022, 2023, 2024, 2025, 2026],
+    noDataNote: "Foundation topic; its questions are counted inside Kinematics and Current Electricity", noDataShort: "in Kinematics / Current",
+    orderText: "Prerequisites come first (Vectors, then Kinematics, then Newton's Laws, and so on). Chapters that many others build on come early.",
+    limitsText: "Limits, stated plainly: NTA does not publish chapter-wise counts. 2022 to 2025 figures come from coaching-institute analyses, and 2026 was tagged by AI from the 19 papers and has not been checked by a person. Treat the plan as a strong starting point, not a guarantee.",
+    yearsText: "2022 to 2026", recencyNote: "recent years count more (2026 the most)",
     marksPerQuestion: 4,
     collected: "2026-10-26",
     sources: [
@@ -515,6 +521,1436 @@ var PLANNER_DATA = {
 };
 
 
+var MATHS_DATA = {
+ "meta": {
+  "exam": "JEE Main",
+  "subject": "Maths",
+  "version": "0.1",
+  "dataStatus": "COACHING_ESTIMATE",
+  "statusLabel": "Estimates: coaching-institute counts 2022-25",
+  "dataNote": "Per-year chapter counts (summed over all shifts) from a coaching-institute analysis. Not official NTA counts. Planner hours, prerequisites and study tips are the planner author's own judgement.",
+  "years": [
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "marksPerQuestion": 4,
+  "collected": "2026-11-14",
+  "sources": [
+   {
+    "label": "Adarsh Barnwal, JEE Main important chapters and last-5-year trend (per-year chapter counts, 2021-2025 columns)",
+    "url": "https://www.adarshbarnwal.com/jee-main-important-chapter/",
+    "use": "Per-year chapter counts, summed over all shifts (2021 column dropped to match Physics)"
+   }
+  ],
+  "mapping": "Sets and Relations are separate from Functions; Trigonometric Ratios + Trigonometric Equations merged; Continuity & Differentiability + Differentiation merged. Mathematical Reasoning, Height & Distance and Properties of Triangle left out (no longer asked).",
+  "caveats": [
+   "Counts are per year over all shifts, not per paper. The planner normalises each year to the current 25-question subject paper (100 marks), so a year with more shifts does not dominate.",
+   "The source lists 2021 to 2025. 2021 is left out for consistency with Physics. 2026 has not been tagged for this subject yet, so it is not included.",
+   "Chapters the source shows as no longer asked since the 2024 syllabus rationalisation are left out of the planner."
+  ],
+  "noDataNote": "",
+  "orderText": "Prerequisites come first (Sets and Functions, then Limits, Continuity, Derivatives and Integration, and so on). Chapters that many others build on come early.",
+  "limitsText": "Limits, stated plainly: NTA does not publish chapter-wise counts. The 2022 to 2025 figures come from a coaching-institute analysis and 2026 has not been added yet. Chapter hours and prerequisites are the planner author's judgement. Treat the plan as a strong starting point, not a guarantee.",
+  "yearsText": "2022 to 2025",
+  "recencyNote": "recent years count more (2025 the most)"
+ },
+ "clusters": [
+  {
+   "id": "alg",
+   "name": "Algebra",
+   "color": "#1f4fb4"
+  },
+  {
+   "id": "trig",
+   "name": "Trigonometry",
+   "color": "#0c7a6b"
+  },
+  {
+   "id": "coord",
+   "name": "Coordinate Geometry",
+   "color": "#8a5a00"
+  },
+  {
+   "id": "calc",
+   "name": "Calculus",
+   "color": "#b3261e"
+  },
+  {
+   "id": "vec",
+   "name": "Vectors & 3D",
+   "color": "#6b3fa0"
+  },
+  {
+   "id": "stat",
+   "name": "Probability & Statistics",
+   "color": "#a1306b"
+  }
+ ],
+ "chapters": [
+  {
+   "id": "SET",
+   "name": "Sets & Relations",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    11,
+    21,
+    17,
+    18
+   ],
+   "sub": [
+    "Set operations & Venn counting",
+    "Relations: types & counting",
+    "Cartesian products"
+   ]
+  },
+  {
+   "id": "FUN",
+   "name": "Functions",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    24,
+    36,
+    30,
+    25
+   ],
+   "sub": [
+    "Domain, range & types of functions",
+    "Composition & inverse",
+    "Graphs & transformations"
+   ]
+  },
+  {
+   "id": "QUA",
+   "name": "Quadratic Equations",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    19,
+    19,
+    19,
+    14
+   ],
+   "sub": [
+    "Nature & location of roots",
+    "Sum/product of roots",
+    "Inequalities & max/min"
+   ]
+  },
+  {
+   "id": "CPX",
+   "name": "Complex Numbers",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    27,
+    24,
+    23,
+    19
+   ],
+   "sub": [
+    "Modulus, argument & polar form",
+    "Roots of unity",
+    "Geometry of complex numbers"
+   ]
+  },
+  {
+   "id": "PNC",
+   "name": "Permutations & Combinations",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    18,
+    39,
+    17,
+    20
+   ],
+   "sub": [
+    "Arrangements with restrictions",
+    "Distribution & grouping",
+    "Derangements & circular arrangements"
+   ]
+  },
+  {
+   "id": "BIN",
+   "name": "Binomial Theorem",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    27,
+    48,
+    25,
+    23
+   ],
+   "sub": [
+    "General & middle term",
+    "Coefficient problems",
+    "Binomial identities"
+   ]
+  },
+  {
+   "id": "SEQ",
+   "name": "Sequences & Series",
+   "cls": 11,
+   "cluster": "alg",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    36,
+    46,
+    36,
+    30
+   ],
+   "sub": [
+    "AP, GP, HP & means",
+    "Special sums & telescoping",
+    "Mixed progression problems"
+   ]
+  },
+  {
+   "id": "MAT",
+   "name": "Matrices & Determinants",
+   "cls": 12,
+   "cluster": "alg",
+   "learn": 10,
+   "revise": 5,
+   "w": [
+    47,
+    51,
+    41,
+    34
+   ],
+   "sub": [
+    "Determinant properties",
+    "Inverse, adjoint & rank-type problems",
+    "Linear systems & consistency"
+   ]
+  },
+  {
+   "id": "TRG",
+   "name": "Trigonometric Ratios & Equations",
+   "cls": 11,
+   "cluster": "trig",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    20,
+    10,
+    14,
+    12
+   ],
+   "sub": [
+    "Identities & transformations",
+    "General solutions",
+    "Max/min & range problems"
+   ]
+  },
+  {
+   "id": "INV",
+   "name": "Inverse Trigonometric Functions",
+   "cls": 12,
+   "cluster": "trig",
+   "learn": 4,
+   "revise": 2,
+   "w": [
+    13,
+    10,
+    8,
+    9
+   ],
+   "sub": [
+    "Principal values & domains",
+    "Identities",
+    "Simplification & graphs"
+   ]
+  },
+  {
+   "id": "STL",
+   "name": "Straight Lines",
+   "cls": 11,
+   "cluster": "coord",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    18,
+    15,
+    30,
+    20
+   ],
+   "sub": [
+    "Slope, angle & family of lines",
+    "Distance & area problems",
+    "Locus & concurrency"
+   ]
+  },
+  {
+   "id": "CIR",
+   "name": "Circles",
+   "cls": 11,
+   "cluster": "coord",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    23,
+    19,
+    20,
+    8
+   ],
+   "sub": [
+    "Equation forms & tangents",
+    "Chords & family of circles",
+    "Radical axis"
+   ]
+  },
+  {
+   "id": "PAR",
+   "name": "Parabola",
+   "cls": 11,
+   "cluster": "coord",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    20,
+    15,
+    12,
+    17
+   ],
+   "sub": [
+    "Standard forms & focal chords",
+    "Tangents & normals",
+    "Locus"
+   ]
+  },
+  {
+   "id": "ELL",
+   "name": "Ellipse",
+   "cls": 11,
+   "cluster": "coord",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    11,
+    11,
+    8,
+    18
+   ],
+   "sub": [
+    "Standard form & eccentricity",
+    "Tangents & normals",
+    "Auxiliary circle & parametric form"
+   ]
+  },
+  {
+   "id": "HYP",
+   "name": "Hyperbola",
+   "cls": 11,
+   "cluster": "coord",
+   "learn": 4,
+   "revise": 2,
+   "w": [
+    10,
+    10,
+    13,
+    12
+   ],
+   "sub": [
+    "Standard form & asymptotes",
+    "Tangents & normals",
+    "Conjugate & rectangular hyperbola"
+   ]
+  },
+  {
+   "id": "LIM",
+   "name": "Limits",
+   "cls": 11,
+   "cluster": "calc",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    14,
+    10,
+    22,
+    13
+   ],
+   "sub": [
+    "Standard limits & expansions",
+    "L'Hopital & indeterminate forms",
+    "Limits of sequences & sums"
+   ]
+  },
+  {
+   "id": "CND",
+   "name": "Continuity & Differentiability",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    26,
+    15,
+    28,
+    10
+   ],
+   "sub": [
+    "Continuity & types of discontinuity",
+    "Differentiability checks",
+    "Differentiation techniques"
+   ]
+  },
+  {
+   "id": "AOD",
+   "name": "Application of Derivatives",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 9,
+   "revise": 4.5,
+   "w": [
+    35,
+    22,
+    20,
+    12
+   ],
+   "sub": [
+    "Monotonicity & extrema",
+    "Tangent, normal & rate of change",
+    "Optimisation & Rolle/LMVT"
+   ]
+  },
+  {
+   "id": "IND",
+   "name": "Indefinite Integration",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    5,
+    10,
+    7,
+    8
+   ],
+   "sub": [
+    "Standard forms & substitution",
+    "By parts & partial fractions",
+    "Special integrals"
+   ]
+  },
+  {
+   "id": "DEF",
+   "name": "Definite Integration",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 9,
+   "revise": 4.5,
+   "w": [
+    40,
+    38,
+    35,
+    22
+   ],
+   "sub": [
+    "Properties of definite integrals",
+    "Reduction & King's property",
+    "Integral inequalities & Leibniz rule"
+   ]
+  },
+  {
+   "id": "AUC",
+   "name": "Area Under Curves",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    20,
+    27,
+    21,
+    19
+   ],
+   "sub": [
+    "Area between curves",
+    "Sketching standard curves",
+    "Area with modulus & parameters"
+   ]
+  },
+  {
+   "id": "DEQ",
+   "name": "Differential Equations",
+   "cls": 12,
+   "cluster": "calc",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    38,
+    22,
+    35,
+    22
+   ],
+   "sub": [
+    "Variable separable & homogeneous",
+    "Linear first-order",
+    "Forming equations & orthogonal trajectories"
+   ]
+  },
+  {
+   "id": "VEC",
+   "name": "Vector Algebra",
+   "cls": 12,
+   "cluster": "vec",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    29,
+    48,
+    34,
+    22
+   ],
+   "sub": [
+    "Dot & cross product",
+    "Scalar & vector triple product",
+    "Geometry with vectors"
+   ]
+  },
+  {
+   "id": "D3",
+   "name": "Three-Dimensional Geometry",
+   "cls": 12,
+   "cluster": "vec",
+   "learn": 9,
+   "revise": 4.5,
+   "w": [
+    46,
+    71,
+    44,
+    36
+   ],
+   "sub": [
+    "Lines: direction ratios & shortest distance",
+    "Planes: equations & angles",
+    "Line-plane & image problems"
+   ]
+  },
+  {
+   "id": "PRB",
+   "name": "Probability",
+   "cls": 12,
+   "cluster": "stat",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    31,
+    28,
+    24,
+    23
+   ],
+   "sub": [
+    "Conditional probability & Bayes",
+    "Distributions (binomial)",
+    "Events & counting-based problems"
+   ]
+  },
+  {
+   "id": "STA",
+   "name": "Statistics",
+   "cls": 11,
+   "cluster": "stat",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    13,
+    21,
+    16,
+    8
+   ],
+   "sub": [
+    "Mean, variance & standard deviation",
+    "Mean deviation",
+    "Change of data & combined sets"
+   ]
+  }
+ ],
+ "edges": [
+  [
+   "SET",
+   "FUN",
+   "E"
+  ],
+  [
+   "FUN",
+   "LIM",
+   "E"
+  ],
+  [
+   "LIM",
+   "CND",
+   "E"
+  ],
+  [
+   "CND",
+   "AOD",
+   "E"
+  ],
+  [
+   "CND",
+   "IND",
+   "H"
+  ],
+  [
+   "IND",
+   "DEF",
+   "E"
+  ],
+  [
+   "DEF",
+   "AUC",
+   "E"
+  ],
+  [
+   "IND",
+   "DEQ",
+   "E"
+  ],
+  [
+   "CND",
+   "DEQ",
+   "H"
+  ],
+  [
+   "QUA",
+   "CPX",
+   "H"
+  ],
+  [
+   "QUA",
+   "SEQ",
+   "H"
+  ],
+  [
+   "SEQ",
+   "BIN",
+   "H"
+  ],
+  [
+   "PNC",
+   "BIN",
+   "E"
+  ],
+  [
+   "PNC",
+   "PRB",
+   "E"
+  ],
+  [
+   "BIN",
+   "PRB",
+   "O"
+  ],
+  [
+   "FUN",
+   "INV",
+   "E"
+  ],
+  [
+   "TRG",
+   "INV",
+   "E"
+  ],
+  [
+   "TRG",
+   "CPX",
+   "H"
+  ],
+  [
+   "TRG",
+   "LIM",
+   "H"
+  ],
+  [
+   "STL",
+   "CIR",
+   "E"
+  ],
+  [
+   "STL",
+   "PAR",
+   "E"
+  ],
+  [
+   "CIR",
+   "PAR",
+   "H"
+  ],
+  [
+   "PAR",
+   "ELL",
+   "H"
+  ],
+  [
+   "ELL",
+   "HYP",
+   "H"
+  ],
+  [
+   "VEC",
+   "D3",
+   "E"
+  ],
+  [
+   "STL",
+   "D3",
+   "H"
+  ],
+  [
+   "FUN",
+   "AOD",
+   "H"
+  ],
+  [
+   "PRB",
+   "STA",
+   "H"
+  ]
+ ],
+ "analogies": [
+  [
+   "PAR",
+   "ELL",
+   "Same focus-directrix idea; standard forms, tangents and normals follow one pattern."
+  ],
+  [
+   "ELL",
+   "HYP",
+   "Mirror-image formulas; learn them together."
+  ],
+  [
+   "DEF",
+   "AUC",
+   "Area under a curve is a definite integral."
+  ],
+  [
+   "PNC",
+   "PRB",
+   "Counting is the base of classical probability."
+  ],
+  [
+   "CPX",
+   "TRG",
+   "Polar form and roots of unity are trigonometry in disguise."
+  ],
+  [
+   "VEC",
+   "D3",
+   "Lines and planes in 3D are vector equations."
+  ],
+  [
+   "BIN",
+   "SEQ",
+   "General-term and summation manipulation is shared."
+  ]
+ ]
+};
+var CHEM_DATA = {
+ "meta": {
+  "exam": "JEE Main",
+  "subject": "Chemistry",
+  "version": "0.1",
+  "dataStatus": "COACHING_ESTIMATE",
+  "statusLabel": "Estimates: coaching-institute counts 2022-25",
+  "dataNote": "Per-year chapter counts (summed over all shifts) from a coaching-institute analysis. Not official NTA counts. Planner hours, prerequisites and study tips are the planner author's own judgement.",
+  "years": [
+   2022,
+   2023,
+   2024,
+   2025
+  ],
+  "marksPerQuestion": 4,
+  "collected": "2026-11-14",
+  "sources": [
+   {
+    "label": "Adarsh Barnwal, JEE Main important chapters and last-5-year trend (per-year chapter counts, 2021-2025 columns)",
+    "url": "https://www.adarshbarnwal.com/jee-main-important-chapter/",
+    "use": "Per-year chapter counts, summed over all shifts (2021 column dropped to match Physics)"
+   }
+  ],
+  "mapping": "p-Block (13-14) merged into p-Block Elements. Left out as no longer asked: States of Matter, Solid State, Surface Chemistry, Hydrogen, s-Block, Metallurgy, Polymers, Chemistry in Everyday Life, Environmental Chemistry.",
+  "caveats": [
+   "Counts are per year over all shifts, not per paper. The planner normalises each year to the current 25-question subject paper (100 marks), so a year with more shifts does not dominate.",
+   "The source lists 2021 to 2025. 2021 is left out for consistency with Physics. 2026 has not been tagged for this subject yet, so it is not included.",
+   "Chapters the source shows as no longer asked since the 2024 syllabus rationalisation are left out of the planner."
+  ],
+  "noDataNote": "",
+  "orderText": "Prerequisites come first (Atomic Structure before Bonding, General Organic Chemistry before the reaction chapters, and so on). Chapters that many others build on come early.",
+  "limitsText": "Limits, stated plainly: NTA does not publish chapter-wise counts. The 2022 to 2025 figures come from a coaching-institute analysis and 2026 has not been added yet. Chapter hours and prerequisites are the planner author's judgement. Treat the plan as a strong starting point, not a guarantee.",
+  "yearsText": "2022 to 2025",
+  "recencyNote": "recent years count more (2025 the most)"
+ },
+ "clusters": [
+  {
+   "id": "phys",
+   "name": "Physical Chemistry",
+   "color": "#1f4fb4"
+  },
+  {
+   "id": "org",
+   "name": "Organic Chemistry",
+   "color": "#b3261e"
+  },
+  {
+   "id": "inorg",
+   "name": "Inorganic Chemistry",
+   "color": "#0c7a6b"
+  }
+ ],
+ "chapters": [
+  {
+   "id": "BAS",
+   "name": "Some Basic Concepts (Mole Concept)",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    27,
+    22,
+    17,
+    25
+   ],
+   "sub": [
+    "Mole & stoichiometry",
+    "Concentration terms",
+    "Limiting reagent & empirical formula"
+   ]
+  },
+  {
+   "id": "ATS",
+   "name": "Structure of Atom",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    25,
+    29,
+    27,
+    22
+   ],
+   "sub": [
+    "Bohr model & spectra",
+    "Quantum numbers & orbitals",
+    "de Broglie & uncertainty"
+   ]
+  },
+  {
+   "id": "THD",
+   "name": "Chemical Thermodynamics",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 9,
+   "revise": 4.5,
+   "w": [
+    24,
+    27,
+    22,
+    32
+   ],
+   "sub": [
+    "First law & enthalpy",
+    "Entropy & Gibbs energy",
+    "Hess's law & bond energies"
+   ]
+  },
+  {
+   "id": "CEQ",
+   "name": "Chemical Equilibrium",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    7,
+    11,
+    10,
+    10
+   ],
+   "sub": [
+    "Kc, Kp & reaction quotient",
+    "Le Chatelier",
+    "Degree of dissociation"
+   ]
+  },
+  {
+   "id": "IEQ",
+   "name": "Ionic Equilibrium",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    15,
+    16,
+    9,
+    15
+   ],
+   "sub": [
+    "pH & buffers",
+    "Hydrolysis & Ksp",
+    "Acid-base theories"
+   ]
+  },
+  {
+   "id": "RDX",
+   "name": "Redox Reactions",
+   "cls": 11,
+   "cluster": "phys",
+   "learn": 4,
+   "revise": 2,
+   "w": [
+    13,
+    13,
+    16,
+    6
+   ],
+   "sub": [
+    "Oxidation numbers & balancing",
+    "Equivalent concept",
+    "Redox titrations"
+   ]
+  },
+  {
+   "id": "SOL",
+   "name": "Solutions",
+   "cls": 12,
+   "cluster": "phys",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    20,
+    29,
+    24,
+    23
+   ],
+   "sub": [
+    "Raoult's law & vapour pressure",
+    "Colligative properties",
+    "Van't Hoff factor"
+   ]
+  },
+  {
+   "id": "ELC",
+   "name": "Electrochemistry",
+   "cls": 12,
+   "cluster": "phys",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    21,
+    25,
+    29,
+    24
+   ],
+   "sub": [
+    "Nernst equation & cell potential",
+    "Electrolysis & Faraday's laws",
+    "Conductance & Kohlrausch"
+   ]
+  },
+  {
+   "id": "KIN",
+   "name": "Chemical Kinetics",
+   "cls": 12,
+   "cluster": "phys",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    22,
+    24,
+    20,
+    25
+   ],
+   "sub": [
+    "Rate laws & order",
+    "Integrated rate equations & half-life",
+    "Arrhenius equation"
+   ]
+  },
+  {
+   "id": "GOC",
+   "name": "General Organic Chemistry",
+   "cls": 11,
+   "cluster": "org",
+   "learn": 12,
+   "revise": 6,
+   "w": [
+    43,
+    36,
+    84,
+    43
+   ],
+   "sub": [
+    "Electronic effects & resonance",
+    "Acidity-basicity & stability",
+    "Isomerism & nomenclature"
+   ]
+  },
+  {
+   "id": "HYD",
+   "name": "Hydrocarbons",
+   "cls": 11,
+   "cluster": "org",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    23,
+    20,
+    27,
+    24
+   ],
+   "sub": [
+    "Alkenes & alkynes reactions",
+    "Aromatic substitution",
+    "Named reactions & mechanisms"
+   ]
+  },
+  {
+   "id": "HAL",
+   "name": "Haloalkanes & Haloarenes",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    13,
+    21,
+    22,
+    15
+   ],
+   "sub": [
+    "SN1/SN2 & E1/E2",
+    "Reactions & stereochemistry",
+    "Haloarenes & named reactions"
+   ]
+  },
+  {
+   "id": "ALC",
+   "name": "Alcohols, Phenols & Ethers",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    26,
+    21,
+    23,
+    13
+   ],
+   "sub": [
+    "Preparation & reactions",
+    "Acidity of phenols & tests",
+    "Ethers & rearrangements"
+   ]
+  },
+  {
+   "id": "ALK",
+   "name": "Aldehydes & Ketones",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 8,
+   "revise": 4,
+   "w": [
+    16,
+    24,
+    19,
+    18
+   ],
+   "sub": [
+    "Nucleophilic addition",
+    "Aldol, Cannizzaro & named reactions",
+    "Oxidation, reduction & tests"
+   ]
+  },
+  {
+   "id": "CAR",
+   "name": "Carboxylic Acids & Derivatives",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 4,
+   "revise": 2,
+   "w": [
+    7,
+    6,
+    7,
+    8
+   ],
+   "sub": [
+    "Acidity & preparation",
+    "Derivatives & interconversion",
+    "Reactions"
+   ]
+  },
+  {
+   "id": "AMN",
+   "name": "Amines",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    25,
+    28,
+    24,
+    19
+   ],
+   "sub": [
+    "Basicity order",
+    "Diazonium salts & reactions",
+    "Hinsberg & Hofmann reactions"
+   ]
+  },
+  {
+   "id": "BIO",
+   "name": "Biomolecules",
+   "cls": 12,
+   "cluster": "org",
+   "learn": 5,
+   "revise": 2.5,
+   "w": [
+    23,
+    22,
+    22,
+    22
+   ],
+   "sub": [
+    "Carbohydrates & structures",
+    "Amino acids & proteins",
+    "Vitamins & nucleic acids"
+   ]
+  },
+  {
+   "id": "PTB",
+   "name": "Periodic Table & Periodicity",
+   "cls": 11,
+   "cluster": "inorg",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    17,
+    15,
+    22,
+    22
+   ],
+   "sub": [
+    "Periodic trends",
+    "Ionisation enthalpy & electron affinity",
+    "Diagonal relationship & anomalies"
+   ]
+  },
+  {
+   "id": "BND",
+   "name": "Chemical Bonding & Molecular Structure",
+   "cls": 11,
+   "cluster": "inorg",
+   "learn": 10,
+   "revise": 5,
+   "w": [
+    30,
+    33,
+    47,
+    22
+   ],
+   "sub": [
+    "VSEPR & hybridisation",
+    "Molecular orbital theory",
+    "Dipole moment & bond properties"
+   ]
+  },
+  {
+   "id": "PBL",
+   "name": "p-Block Elements",
+   "cls": 12,
+   "cluster": "inorg",
+   "learn": 9,
+   "revise": 4.5,
+   "w": [
+    41,
+    35,
+    25,
+    13
+   ],
+   "sub": [
+    "Group 15 & 16 compounds",
+    "Halogens & noble gases",
+    "Group 13 & 14 trends"
+   ]
+  },
+  {
+   "id": "DFB",
+   "name": "d- and f-Block Elements",
+   "cls": 12,
+   "cluster": "inorg",
+   "learn": 7,
+   "revise": 3.5,
+   "w": [
+    28,
+    28,
+    45,
+    25
+   ],
+   "sub": [
+    "Properties & oxidation states",
+    "KMnO4, K2Cr2O7 & compounds",
+    "Lanthanoid contraction"
+   ]
+  },
+  {
+   "id": "COO",
+   "name": "Coordination Compounds",
+   "cls": 12,
+   "cluster": "inorg",
+   "learn": 10,
+   "revise": 5,
+   "w": [
+    31,
+    52,
+    42,
+    40
+   ],
+   "sub": [
+    "Nomenclature & isomerism",
+    "Crystal field theory & colour",
+    "Hybridisation, magnetic moment & stability"
+   ]
+  },
+  {
+   "id": "PRA",
+   "name": "Practical Chemistry",
+   "cls": 12,
+   "cluster": "inorg",
+   "learn": 6,
+   "revise": 3,
+   "w": [
+    6,
+    6,
+    16,
+    6
+   ],
+   "sub": [
+    "Salt analysis & tests",
+    "Titrations",
+    "Detection of elements"
+   ]
+  }
+ ],
+ "edges": [
+  [
+   "BAS",
+   "SOL",
+   "E"
+  ],
+  [
+   "BAS",
+   "RDX",
+   "E"
+  ],
+  [
+   "BAS",
+   "THD",
+   "H"
+  ],
+  [
+   "BAS",
+   "KIN",
+   "H"
+  ],
+  [
+   "ATS",
+   "PTB",
+   "E"
+  ],
+  [
+   "ATS",
+   "BND",
+   "E"
+  ],
+  [
+   "PTB",
+   "BND",
+   "H"
+  ],
+  [
+   "BND",
+   "COO",
+   "H"
+  ],
+  [
+   "ATS",
+   "COO",
+   "H"
+  ],
+  [
+   "PTB",
+   "PBL",
+   "E"
+  ],
+  [
+   "PTB",
+   "DFB",
+   "E"
+  ],
+  [
+   "DFB",
+   "COO",
+   "E"
+  ],
+  [
+   "THD",
+   "CEQ",
+   "E"
+  ],
+  [
+   "CEQ",
+   "IEQ",
+   "E"
+  ],
+  [
+   "RDX",
+   "ELC",
+   "E"
+  ],
+  [
+   "THD",
+   "ELC",
+   "H"
+  ],
+  [
+   "SOL",
+   "ELC",
+   "H"
+  ],
+  [
+   "CEQ",
+   "KIN",
+   "O"
+  ],
+  [
+   "IEQ",
+   "PRA",
+   "H"
+  ],
+  [
+   "BND",
+   "PBL",
+   "H"
+  ],
+  [
+   "COO",
+   "PRA",
+   "O"
+  ],
+  [
+   "GOC",
+   "HYD",
+   "E"
+  ],
+  [
+   "GOC",
+   "HAL",
+   "E"
+  ],
+  [
+   "GOC",
+   "ALC",
+   "E"
+  ],
+  [
+   "HAL",
+   "ALC",
+   "H"
+  ],
+  [
+   "ALC",
+   "ALK",
+   "E"
+  ],
+  [
+   "ALK",
+   "CAR",
+   "E"
+  ],
+  [
+   "GOC",
+   "AMN",
+   "E"
+  ],
+  [
+   "ALK",
+   "AMN",
+   "H"
+  ],
+  [
+   "GOC",
+   "BIO",
+   "H"
+  ],
+  [
+   "ALK",
+   "BIO",
+   "H"
+  ],
+  [
+   "BND",
+   "GOC",
+   "H"
+  ]
+ ],
+ "analogies": [
+  [
+   "THD",
+   "ELC",
+   "Gibbs energy links cell potential to spontaneity."
+  ],
+  [
+   "BND",
+   "GOC",
+   "Hybridisation, resonance and polarity explain organic reactivity."
+  ],
+  [
+   "COO",
+   "BND",
+   "Crystal field and hybridisation extend bonding theory."
+  ],
+  [
+   "HAL",
+   "ALC",
+   "Substitution and elimination mechanisms are shared."
+  ],
+  [
+   "ALK",
+   "CAR",
+   "Carbonyl chemistry: nucleophilic addition and oxidation."
+  ],
+  [
+   "CEQ",
+   "IEQ",
+   "Ionic equilibrium is chemical equilibrium applied to acids, bases and salts."
+  ]
+ ]
+};
+
 </script>
 <script>
 /* ALLEN JEE Physics Planner — calculation engine (no DOM, deterministic, no randomness / clock).
@@ -537,7 +1973,7 @@ var Planner = (function () {
     var years = data.meta.years, n = years.length;
     var chs = data.chapters.map(function (c) { return { id: c.id, w: (override && override[c.id]) ? override[c.id] : c.w }; });
     var ytot = years.map(function (_, i) { return chs.reduce(function (s, c) { return s + c.w[i]; }, 0); });
-    var recency = [0.1, 0.15, 0.2, 0.25, 0.3];
+    var rb = [0.1, 0.15, 0.2, 0.25, 0.3].slice(-n), rsum = rb.reduce(function (a, b) { return a + b; }, 0), recency = rb.map(function (x) { return x / rsum; });
     var out = {}, maxShare = 0;
     chs.forEach(function (c) {
       var perYear = c.w.map(function (v, i) { return v / ytot[i] * PAPER_Q; });   // normalised to a 25-question subject paper
@@ -987,7 +2423,7 @@ var Simple = (function () {
   function action(eff) { return eff >= 8 ? "Quick test & revise" : eff >= 5.5 ? "Revise + practice" : eff >= 3.5 ? "Rebuild concepts" : "Learn from scratch"; }
 
   function build(inp) {
-    var D = PLANNER_DATA, W = Planner.weightage(D);
+    var D = inp.data || PLANNER_DATA, W = Planner.weightage(D);
     var days = Math.round(inp.days), H = inp.hours;
     var dh = []; for (var q = 0; q < days; q++) dh.push(inp.dayHours && inp.dayHours[q] != null && !isNaN(+inp.dayHours[q]) ? Math.max(0, +inp.dayHours[q]) : H);
     var sumH = function (a) { return a.reduce(function (s, x) { return s + x; }, 0); };
@@ -1114,7 +2550,7 @@ var Simple = (function () {
       it.action = action(it.eff) + (it.mode === "key" ? " · key topics only" : it.mode === "short" ? " · shortened" : it.mode === "ext" ? " · extended practice" : "");
       it.focus = it.mode === "key" ? it.c.sub.slice(0, 2) : [];
       var why = [], rk = rankSorted.indexOf(it.id) + 1;
-      why.push(it.c.noData ? "Foundation topic; its questions are counted inside Kinematics and Current Electricity" : "Marks: #" + rk + " of " + rankSorted.length + " chapters, about " + fh2(Math.round(it.mk * 10) / 10) + " marks per paper");
+      why.push(it.c.noData ? (D.meta.noDataNote || "Foundation topic") : "Marks: #" + rk + " of " + rankSorted.length + " chapters, about " + fh2(Math.round(it.mk * 10) / 10) + " marks per paper");
       why.push("you rated " + it.eff + "/10, so " + fh2(it.h) + " h");
       var pre = D.edges.filter(function (e) { return e[2] === "E" && e[1] === it.id && sel[e[0]]; }).map(function (e) { return byId[e[0]].c.name; });
       if (pre.length) why.push("after " + pre.join(" and ") + ", which it needs");
@@ -1141,16 +2577,16 @@ var Simple = (function () {
 
 </script>
 <script>
-(function () {
-  var KEY = "physics-planner-v1", EXAM = "2027-01-20", END = "2027-01-19", MINDAYS = 7, D = PLANNER_DATA, $ = function (id) { return document.getElementById(id); };
+function mountPlanner(CFG) {
+  var KEY = CFG.key, SUBJ = CFG.subject, root = CFG.root, EXAM = "2027-01-20", END = "2027-01-19", MINDAYS = 7, D = CFG.data, $ = function (id) { return root.querySelector("#" + id); };
   var S = { days: 60, hours: 3, hW: 3, hS: 4, dayH: {}, dayN: {}, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
-  var SEED = window.__PLANNER_SEED || null, stored = null;
+  var SEED = (window.__PLANNER_SEEDS && window.__PLANNER_SEEDS[CFG.id]) || (CFG.id === "physics" && window.__PLANNER_SEED) || null, stored = null;
   try { var raw = window.localStorage.getItem(KEY); if (raw) stored = JSON.parse(raw); } catch (e) { }
   var o = stored;
   if (SEED && (!stored || (SEED.savedAt || 0) > (stored.savedAt || 0))) o = SEED;
   if (o) { S = Object.assign(S, o); if (o.hW == null && o.hours != null) { S.hW = o.hours; S.hS = o.hours; } S.days = totalDays(S.start); if (!S.status || typeof S.status !== "object") S.status = {}; if (!S.dayH) S.dayH = {}; if (!S.dayN) S.dayN = {}; }
   var saveOk = true, resetting = false;
-  function save(keepTs) { if (resetting) return; if (!keepTs) S.savedAt = Date.now(); try { window.localStorage.setItem(KEY, JSON.stringify(S)); saveOk = true; } catch (e) { saveOk = false; } var el = document.getElementById("saved"); if (el) el.textContent = saveOk ? "Your entries are saved automatically on this device and browser." : "This browser is blocking storage (private mode?), so entries cannot be saved."; }
+  function save(keepTs) { if (resetting) return; if (!keepTs) S.savedAt = Date.now(); try { window.localStorage.setItem(KEY, JSON.stringify(S)); saveOk = true; } catch (e) { saveOk = false; } var el = $("saved"); if (el) el.textContent = saveOk ? "Your entries are saved automatically on this device and browser." : "This browser is blocking storage (private mode?), so entries cannot be saved."; }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
   var MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
   function fd(d) { return ("0" + d.getDate()).slice(-2) + "/" + ("0" + (d.getMonth() + 1)).slice(-2) + "/" + d.getFullYear(); }
@@ -1159,15 +2595,15 @@ var Simple = (function () {
   var chapterInputs = D.chapters.map(function (c) { return '<label class="ci"><span>' + esc(c.name) + '</span><input type="number" min="0" max="10" step="1" inputmode="numeric" data-ch="' + c.id + '" value="' + (S.over[c.id] != null ? S.over[c.id] : 7) + '"></label>'; }).join("");
 
   var intro = '<details class="glass fold how" id="howd"><summary>How Your Plan Is Made</summary><div class="fold-in"><p class="muted">Nothing here is a guess dressed up as a fact. These are the seven things the planner weighs, in this order.</p><ol>' +
-    '<li><b>Marks at stake.</b> How much of the 25-question Physics paper (100 marks) each chapter has carried across JEE Main 2022 to 2026. Every year is scaled to the same paper size so a year with more shifts does not dominate, and recent years count more (2026 the most).</li>' +
+    '<li><b>Marks at stake.</b> How much of the 25-question ' + SUBJ + ' paper (100 marks) each chapter has carried across JEE Main ' + D.meta.yearsText + '. Every year is scaled to the same paper size so a year with more shifts does not dominate, and ' + D.meta.recencyNote + '.</li>' +
     '<li><b>Your preparation.</b> The 0 to 10 you give each chapter. Low means learn from scratch, middle means revise and practise, high means a quick test. A chapter you already know well gets little time.</li>' +
     '<li><b>Time the chapter really needs.</b> Each chapter has a base time for learning it fresh and for revising it. Your rating moves it between the two.</li>' +
     '<li><b>Marks still to win per hour.</b> Marks at stake multiplied by how far you are from a solid score. This is what decides what to keep when time is short.</li>' +
-    '<li><b>Order.</b> Prerequisites come first (Vectors, then Kinematics, then Newton\'s Laws, and so on). Chapters that many others build on come early.</li>' +
+    '<li><b>Order.</b> ' + D.meta.orderText + '</li>' +
     '<li><b>Your calendar.</b> Your start date, and the hours you can give on weekdays, on Sundays and on any single date. Each day, 80% goes to new chapter study and 20% to recalling earlier chapters, with a timed test every sixth day and a full mock on the last day.</li>' +
     '<li><b>When time is short.</b> Best use of time keeps the highest-value chapters and covers some by key topics only. Fit everything shortens every chapter when time is short, and extends them with extra practice when time is ample, keeping at most the last 3 days for tests and buffer. Either way, if a chapter is left out, you are told.</li></ol>' +
-    '<p class="small faint">Limits, stated plainly: NTA does not publish chapter-wise counts. 2022 to 2025 figures come from coaching-institute analyses, and 2026 was tagged by AI from the 19 papers and has not been checked by a person. Treat the plan as a strong starting point, not a guarantee.</p></div></details>';
-  $("app").innerHTML = '<details class="glass fold" id="cust"><summary>Let\'s Customize the Plan for You</summary>' +
+    '<p class="small faint">' + D.meta.limitsText + '</p></div></details>';
+  root.innerHTML = '<details class="glass fold" id="cust"><summary>Let\'s Customize the Plan for You</summary>' +
     '<form id="f" class="form fold-in" novalidate>' +
     '<div class="fields">' +
     '<label>Hours on weekdays (Mon to Sat)<input id="hw" type="number" min="0" max="16" step="0.5" inputmode="decimal" value="' + S.hW + '"></label>' +
@@ -1181,16 +2617,16 @@ var Simple = (function () {
     '<label class="mode"><input type="radio" name="mode" value="all"><span><b>Fit everything</b><i>Keeps every chapter and shortens each one. Drops chapters only if even that cannot fit.</i></span></label>' +
     '</div>' +
     '<p class="muted small">If you have more time than the chapters need, the planner always fits everything, whichever type you choose.</p>' +
-    '<details class="cal sub" open><summary><h2>Your calendar</h2></summary><div class="row"><button type="button" class="btn alt" id="calreset">Clear my edits</button></div><p class="muted small">Each date shows the hours you can give Physics. Change any date for exams, pre-boards or travel, and add a short note such as "Pre-board". Dates you changed are outlined.</p><div id="calbox" class="calwrap"></div><p id="caltot" class="muted small" aria-live="polite"></p></details>' +
+    '<details class="cal sub" open><summary><h2>Your calendar</h2></summary><div class="row"><button type="button" class="btn alt" id="calreset">Clear my edits</button></div><p class="muted small">Each date shows the hours you can give ' + SUBJ + '. Change any date for exams, pre-boards or travel, and add a short note such as "Pre-board". Dates you changed are outlined.</p><div id="calbox" class="calwrap"></div><p id="caltot" class="muted small" aria-live="polite"></p></details>' +
     '<details class="prep sub" open><summary><h2>Your preparation, chapter by chapter</h2></summary><div class="row"><label class="all">Set all to <input id="all" type="number" min="0" max="10" step="1" inputmode="numeric" value="7"></label></div><p class="muted small">0 = not started, 10 = exam ready. Default is 7.</p><div class="cgrid">' + chapterInputs + '</div></details>' +
     '<div class="row"><button class="btn" type="submit">Make my plan</button><span id="err" class="err" role="alert"></span></div>' +
     '</form></details>' + intro + '<div id="out"></div>' +
-    '<div class="wipe"><p id="saved" class="small faint"></p><button type="button" class="wipebtn" id="wipe">Delete all my data from this device</button></div>' +
-    '<div class="modal" id="modal" hidden><div class="mbox glass" role="alertdialog" aria-modal="true" aria-labelledby="mt" aria-describedby="md"><h3 id="mt">Delete all your data?</h3><p id="md">This permanently erases your saved entries and plan from this device and browser. It cannot be undone.</p><div class="row"><button type="button" class="btn" id="mno">Keep my data</button><button type="button" class="wipebtn danger" id="myes">Yes, delete everything</button></div></div></div>';
+    '<div class="wipe"><p id="saved" class="small faint"></p><button type="button" class="wipebtn" id="wipe">Delete my ' + SUBJ + ' data from this device</button></div>' +
+    '<div class="modal" id="modal" hidden><div class="mbox glass" role="alertdialog" aria-modal="true" aria-labelledby="mt" aria-describedby="md"><h3 id="mt">Delete your ' + SUBJ + ' data?</h3><p id="md">This permanently erases your saved entries and plan from this device and browser. It cannot be undone.</p><div class="row"><button type="button" class="btn" id="mno">Keep my data</button><button type="button" class="wipebtn danger" id="myes">Yes, delete everything</button></div></div></div>';
 
-  document.querySelectorAll('input[name=mode]').forEach(function (r) { r.checked = r.value === S.mode; });
+  root.querySelectorAll('input[name=mode]').forEach(function (r) { r.checked = r.value === S.mode; });
   function clampv(v) { v = parseInt(v, 10); return isNaN(v) ? 7 : Math.max(0, Math.min(10, v)); }
-  $("all").addEventListener("input", function () { if (this.value === "") return; var v = clampv(this.value); document.querySelectorAll("[data-ch]").forEach(function (i) { i.value = v; }); });
+  $("all").addEventListener("input", function () { if (this.value === "") return; var v = clampv(this.value); root.querySelectorAll("[data-ch]").forEach(function (i) { i.value = v; }); });
 
 
   var WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"], MN = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1235,13 +2671,15 @@ var Simple = (function () {
   $("start").addEventListener("input", updCd); $("start").addEventListener("change", updCd); updCd();
   function collect() {
     var hw = parseFloat($("hw").value), hs = parseFloat($("hs").value), b = parseInt($("buffer").value, 10), over = {};
-    document.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = i.value === "" ? (S.over[i.getAttribute("data-ch")] != null ? S.over[i.getAttribute("data-ch")] : 7) : clampv(i.value); });
-    var m = document.querySelector("input[name=mode]:checked");
+    root.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = i.value === "" ? (S.over[i.getAttribute("data-ch")] != null ? S.over[i.getAttribute("data-ch")] : 7) : clampv(i.value); });
+    var m = root.querySelector("input[name=mode]:checked");
     S.hW = isNaN(hw) ? S.hW : hw; S.hS = isNaN(hs) ? S.hS : hs; S.hours = S.hW; S.buffer = isNaN(b) ? S.buffer : b; S.start = $("start").value; S.mode = m ? m.value : S.mode; S.over = over; S.days = totalDays(S.start);
   }
   function persist() { if (resetting) return; collect(); save(); }
   $("f").addEventListener("input", persist); $("f").addEventListener("change", persist);
   window.addEventListener("pagehide", persist);
+  window.__PLANNER_API = window.__PLANNER_API || {};
+  window.__PLANNER_API[CFG.id] = { snapshot: function () { persist(); var o2 = JSON.parse(JSON.stringify(S)); o2.savedAt = Date.now(); return o2; } };
   var modal = $("modal"), lastFocus = null;
   function openM() { lastFocus = document.activeElement; modal.hidden = false; $("mno").focus(); }
   function closeM() { modal.hidden = true; if (lastFocus && lastFocus.focus) lastFocus.focus(); }
@@ -1254,8 +2692,8 @@ var Simple = (function () {
     try { window.localStorage.removeItem(KEY); if (SEED) window.localStorage.setItem(KEY, JSON.stringify({ savedAt: Date.now() })); } catch (e) { }
     S = { days: 60, hours: 3, hW: 3, hS: 4, dayH: {}, dayN: {}, buffer: 3, level: 7, start: "", mode: "best", over: {}, status: {} };
     $("hw").value = 3; $("hs").value = 4; buildCal(); $("buffer").value = 3; $("start").value = ""; $("all").value = 7;
-    document.querySelectorAll("[data-ch]").forEach(function (i) { i.value = 7; });
-    document.querySelectorAll("input[name=mode]").forEach(function (r) { r.checked = r.value === "best"; });
+    root.querySelectorAll("[data-ch]").forEach(function (i) { i.value = 7; });
+    root.querySelectorAll("input[name=mode]").forEach(function (r) { r.checked = r.value === "best"; });
     $("out").innerHTML = ""; $("err").textContent = ""; rpMsg = "";
     var c = $("cust"), hd = $("howd"); if (c) c.open = false; if (hd) hd.open = false;
     modal.hidden = true; window.scrollTo(0, 0);
@@ -1271,11 +2709,11 @@ var Simple = (function () {
     if (days < MINDAYS) { err.textContent = "Start on or before " + fd(addD(pD(END), -(MINDAYS - 1))) + " so the plan has at least " + MINDAYS + " days before JEE Main (20/01/2027)."; $("start").focus(); return; }
     if (!(hw >= 0 && hw <= 16)) { err.textContent = "Weekday hours must be between 0 and 16."; $("hw").focus(); return; }
     if (!(hs >= 0 && hs <= 16)) { err.textContent = "Sunday hours must be between 0 and 16."; $("hs").focus(); return; }
-    if (dayHoursArr(start, days, S.dayH, hw, hs).reduce(function (a, b) { return a + b; }, 0) < 5) { err.textContent = "Your calendar has less than 5 hours of Physics time in total. Add more hours."; return; }
+    if (dayHoursArr(start, days, S.dayH, hw, hs).reduce(function (a, b) { return a + b; }, 0) < 5) { err.textContent = "Your calendar has less than 5 hours of " + SUBJ + " time in total. Add more hours."; return; }
     if (!(buffer >= 0 && buffer < days)) { err.textContent = "Buffer days must be 0 or more, and fewer than your total days."; $("buffer").focus(); return; }
     err.textContent = "";
-    var over = {}; document.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = clampv(i.value); });
-    var mode = document.querySelector("input[name=mode]:checked").value;
+    var over = {}; root.querySelectorAll("[data-ch]").forEach(function (i) { over[i.getAttribute("data-ch")] = clampv(i.value); });
+    var mode = root.querySelector("input[name=mode]:checked").value;
     S = { days: days, hours: hw, hW: hw, hS: hs, dayH: S.dayH || {}, dayN: S.dayN || {}, buffer: buffer, level: level, start: start, mode: mode, over: over, planned: true, status: S.status || {} }; save();
     delete S.rp; view();
     $("out").scrollIntoView({ behavior: "smooth", block: "start" });
@@ -1294,15 +2732,16 @@ var Simple = (function () {
     b.parentNode.querySelectorAll("button").forEach(function (x) { var on = S.status[id] === x.getAttribute("data-st"); x.classList.toggle("on", on); x.setAttribute("aria-checked", on ? "true" : "false"); });
     save();
   });
-  function dlName(ext) { return "60-day-physics-plan-" + (S.start || "plan") + "." + ext; }
+  function dlName(ext) { return "60-day-" + CFG.id + "-plan-" + (S.start || "plan") + "." + ext; }
   function downloadHTML() {
     persist();
     var clone = document.documentElement.cloneNode(true);
-    var app = clone.querySelector("#app"); if (app) app.innerHTML = "<noscript>This planner needs JavaScript.</noscript>";
+    clone.querySelectorAll(".tabpanel").forEach(function (pn) { pn.innerHTML = ""; pn.hidden = pn.id !== "panel-" + CFG.id; });
+    clone.querySelectorAll(".tab").forEach(function (t) { t.setAttribute("aria-selected", t.getAttribute("data-tab") === CFG.id ? "true" : "false"); });
     var old = clone.querySelector("#planner-seed"); if (old) old.remove();
-    var snap = JSON.parse(JSON.stringify(S)); snap.savedAt = Date.now();
+    var seeds = {}; Object.keys(window.__PLANNER_API).forEach(function (k) { seeds[k] = window.__PLANNER_API[k].snapshot(); });
     var sc = document.createElement("script"); sc.id = "planner-seed";
-    sc.textContent = "window.__PLANNER_SEED=" + JSON.stringify(snap).replace(/</g, "\\u003c") + ";";
+    sc.textContent = "window.__PLANNER_SEEDS=" + JSON.stringify(seeds).replace(/</g, "\\u003c") + ";";
     clone.querySelector("head").insertBefore(sc, clone.querySelector("head").firstChild);
     var html = "<!doctype html>\n" + clone.outerHTML;
     var url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
@@ -1313,11 +2752,11 @@ var Simple = (function () {
   function downloadPDF() {
     persist();
     var t = document.title; document.title = dlName("pdf").replace(/\.pdf$/, "");
-    document.querySelectorAll("#out details").forEach(function (d) { d.open = true; });
+    root.querySelectorAll("#out details").forEach(function (d) { d.open = true; });
     window.print();
     setTimeout(function () { document.title = t; }, 1000);
   }
-  document.addEventListener("click", function (e) {
+  root.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("button[data-dl]"); if (!b) return;
     if (b.getAttribute("data-dl") === "pdf") downloadPDF(); else downloadHTML();
   });
@@ -1331,7 +2770,7 @@ var Simple = (function () {
   function daysToJEE() { return dayDiff(pD(EXAM), pD(todayISO())); }
   function paintHead() {
     var n = daysToJEE(), h = document.querySelector(".brand h1"); if (!h) return;
-    h.innerHTML = n > 0 ? 'JEE Main 2027: Physics Plan to 99 Percentile in <span class="ring" title="Days left until JEE Main on 20/01/2027">' + n + '</span> day' + (n === 1 ? '' : 's') : 'JEE Main 2027: Physics Plan to 99 Percentile';
+    h.innerHTML = n > 0 ? 'JEE Main 2027: Plan to 99 Percentile in <span class="ring" title="Days left until JEE Main on 20/01/2027">' + n + '</span> day' + (n === 1 ? '' : 's') : 'JEE Main 2027: Plan to 99 Percentile';
   }
   paintHead();
   var rpMsg = "";
@@ -1340,15 +2779,15 @@ var Simple = (function () {
   function dayDiff(a, b) { return Math.round((Date.UTC(a.getFullYear(), a.getMonth(), a.getDate()) - Date.UTC(b.getFullYear(), b.getMonth(), b.getDate())) / 864e5); }
   function iso(d) { return d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2); }
   function curPlan() {
-    if (S.rp) return Simple.build({ days: S.rp.rem, hours: S.rp.hours, dayHours: S.rp.dh, buffer: S.rp.buffer, level: 7, start: S.rp.from, mode: S.rp.mode, over: S.rp.over, exclude: S.rp.ex });
-    return Simple.build({ days: S.days, hours: S.hW, dayHours: dayHoursArr(S.start, S.days, S.dayH, S.hW, S.hS), buffer: S.buffer, level: S.level, start: S.start, mode: S.mode, over: S.over });
+    if (S.rp) return Simple.build({ data: D, days: S.rp.rem, hours: S.rp.hours, dayHours: S.rp.dh, buffer: S.rp.buffer, level: 7, start: S.rp.from, mode: S.rp.mode, over: S.rp.over, exclude: S.rp.ex });
+    return Simple.build({ data: D, days: S.days, hours: S.hW, dayHours: dayHoursArr(S.start, S.days, S.dayH, S.hW, S.hS), buffer: S.buffer, level: S.level, start: S.start, mode: S.mode, over: S.over });
   }
   function rowsOf(p, off) {
     return p.dayList.map(function (d) {
       var main = d.slices.length ? d.slices.map(function (s) { return esc(s.it.c.name) + ' <i>' + fh(s.h) + ' h</i>'; }).join(' + ') : 'Buffer and test day: practice papers and weak-spot revision';
       var rc = d.kind === 'mock' ? 'Full-length mock paper, then review mistakes' : d.kind === 'test' ? (d.testOn ? 'Timed test on the chapters finished so far' : 'Practice problems') : d.recall.length ? 'Recall: ' + esc(d.recall.map(function (c) { return c.c.name; }).join(' and ')) : 'Practice problems';
       var nts = S.rp ? (S.rp.dn || {}) : (S.dayN || {}), tg = nts[iso(d.date)] || "";
-      if (d.kind === 'off') return { n: off + d.n, d: iso(d.date), m: 'No Physics time planned', r: 'Rest or other commitments', t: esc(tg) };
+      if (d.kind === 'off') return { n: off + d.n, d: iso(d.date), m: 'No ' + SUBJ + ' time planned', r: 'Rest or other commitments', t: esc(tg) };
       return { n: off + d.n, d: iso(d.date), m: main, r: fh(d.hours) + ' h · ' + rc + ' (' + fh(d.recH) + ' h)', t: esc(tg) };
     });
   }
@@ -1370,10 +2809,10 @@ var Simple = (function () {
     var p = curPlan();
     rpMsg = "Re-planned from today. " + nd + " done" + (ns ? ", " + ns + " skipped chapter" + (ns > 1 ? "s" : "") + " brought back in" : "") + ". " + p.order.length + " chapters re-packed into the " + (total - off) + " days left; the plan still ends on " + fd(p.end) + ".";
     view();
-    var el = document.getElementById("rpmsg"); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
+    var el = $("rpmsg"); if (el && el.scrollIntoView) el.scrollIntoView({ behavior: "smooth", block: "center" });
   }
   function undoReplan() { delete S.rp; rpMsg = "Back to your original plan."; save(); view(); }
-  document.addEventListener("click", function (e) {
+  root.addEventListener("click", function (e) {
     var b = e.target.closest && e.target.closest("button[data-rp]"); if (!b) return;
     if (b.getAttribute("data-rp") === "go") replan(); else undoReplan();
   });
@@ -1382,7 +2821,7 @@ var Simple = (function () {
     var rp = S.rp, off = rp ? rp.hist.length : 0;
     h += '<div class="rpbar glass"><p><b>Falling behind?</b> Tick Done on what you have finished, then re-plan. Everything you have not finished is re-packed into the days left, and the plan still ends on ' + fd(rp ? p.end : p.end) + '. Chapters you marked Skipped are scheduled again, by marks at stake and prerequisites.</p><div class="acts"><button type="button" class="btn" data-rp="go">Re-plan from today</button>' + (rp ? '<button type="button" class="btn alt" data-rp="undo">Back to original plan</button>' : '') + '</div>' + (rpMsg ? '<p id="rpmsg" class="rpmsg" role="status">' + esc(rpMsg) + '</p>' : '') + '</div>';
     if (!p.order.length) h += '<div class="note ok">Nothing left to plan: every chapter is done. Use the days for practice papers.</div>';
-    h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days · ' + fh(p.totalH) + ' h of Physics time in total. On each day about 80% goes to chapter study and 20% to recall and tests.</p>';
+    h += '<p class="sum">' + fd(p.start) + ' → ' + fd(p.end) + ' · ' + p.days + ' days · ' + fh(p.totalH) + ' h of ' + SUBJ + ' time in total. On each day about 80% goes to chapter study and 20% to recall and tests.</p>';
     if (p.skipped.length) h += '<div class="warn" role="alert"><b>Not enough time for everything.</b> The ' + p.skipped.length + ' lowest-priority chapter' + (p.skipped.length > 1 ? 's are' : ' is') + ' skipped (listed below). Add days or hours to bring ' + (p.skipped.length > 1 ? 'them' : 'it') + ' back.</div>';
     if (p.keyOnly) h += '<div class="note">' + p.keyOnly + ' chapter' + (p.keyOnly > 1 ? 's are' : ' is') + ' covered by key topics only, to save time.</div>';
     if (p.shortened) h += '<div class="note">' + p.shortened + ' chapter' + (p.shortened > 1 ? 's are' : ' is') + ' shortened to fit.</div>';
@@ -1397,7 +2836,7 @@ var Simple = (function () {
       '</ol></div></details>';
     h += '<details class="glass fold seqd" open><summary>Chapter-by-chapter plan</summary><div class="seq"><div class="r hd"><span>#</span><span>Chapter</span><span>Status</span><span>Dates</span><span>Hours</span><span>Avg marks per paper</span><span>Questions asked ' + D.meta.years[0] + '–' + String(D.meta.years[D.meta.years.length - 1]).slice(2) + '</span><span>What to do</span></div>';
     p.order.forEach(function (it, i) {
-      var q = it.c.noData ? "in Kinematics / Current" : it.c.w.join(" · ");
+      var q = it.c.noData ? (D.meta.noDataShort || "–") : it.c.w.join(" · ");
       h += '<div class="r"><span class="n">' + (i + 1) + '</span><span class="nm">' + esc(it.c.name) + (it.focus.length ? '<small>Focus: ' + esc(it.focus.join(", ")) + '</small>' : '') + '<small class="why">Why here: ' + esc(it.why.join("; ")) + '.</small>' + '</span>' + stat(it.c) + '<span class="num dt">' + (it.d1 === it.d2 ? fd(it.date1) : fd(it.date1) + ' – ' + fd(it.date2)) + '</span><span class="num">' + fh(it.h) + ' h</span><span class="num">' + (it.mk === null ? '–' : fh(Math.round(it.mk * 10) / 10)) + '</span><span class="num q">' + q + '</span><span class="act">' + esc(it.action) + '</span></div>';
     });
     h += '</div></details>';
@@ -1412,6 +2851,24 @@ var Simple = (function () {
   }
   save(true);
   if (S.planned && S.start) { try { view(); } catch (e) { } }
+}
+(function () {
+  var SUBJECTS = [
+    { id: "physics", label: "Physics", data: PLANNER_DATA, key: "physics-planner-v1" },
+    { id: "maths", label: "Maths", data: MATHS_DATA, key: "maths-planner-v1" },
+    { id: "chemistry", label: "Chemistry", data: CHEM_DATA, key: "chemistry-planner-v1" }
+  ];
+  var active = "physics"; try { var t0 = window.localStorage.getItem("planner-tab"); if (t0 && SUBJECTS.some(function (x) { return x.id === t0; })) active = t0; } catch (e) { }
+  SUBJECTS.forEach(function (sb) { mountPlanner({ id: sb.id, subject: sb.label, data: sb.data, key: sb.key, root: document.getElementById("panel-" + sb.id) }); });
+  function show(id) {
+    active = id; try { window.localStorage.setItem("planner-tab", id); } catch (e) { }
+    SUBJECTS.forEach(function (sb) { var on = sb.id === id; document.getElementById("panel-" + sb.id).hidden = !on; var t = document.querySelector('.tab[data-tab="' + sb.id + '"]'); t.setAttribute("aria-selected", on ? "true" : "false"); t.tabIndex = on ? 0 : -1; });
+  }
+  document.querySelectorAll(".tab").forEach(function (t) {
+    t.addEventListener("click", function () { show(t.getAttribute("data-tab")); });
+    t.addEventListener("keydown", function (e) { var i = SUBJECTS.findIndex(function (x) { return x.id === active; }); if (e.key === "ArrowRight") i = (i + 1) % 3; else if (e.key === "ArrowLeft") i = (i + 2) % 3; else return; show(SUBJECTS[i].id); document.querySelector('.tab[data-tab="' + SUBJECTS[i].id + '"]').focus(); });
+  });
+  show(active);
 })();
 
 </script>

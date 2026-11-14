@@ -1,4 +1,4 @@
-# JEE Main 2027 Physics Planner
+# JEE Main 2027 Planner (Physics, Maths, Chemistry)
 
 A single-file web planner (`index.html`) that builds an exam-dated JEE Main Physics plan from a student's start date, daily hours and chapter-wise preparation.
 
